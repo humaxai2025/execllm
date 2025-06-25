@@ -1,16 +1,30 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { LLMCard } from "../components/LLMCard";
 import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
+import { FilterBar } from "../components/FilterBar";
 import { motion } from "framer-motion";
 import { llmsData, type LLMModel } from "../data/llms";
+
+interface Filters {
+  cost: string[];
+  vendor: string[];
+  category: string[];
+  deployment: string[];
+}
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<LLMModel | null>(null);
   const [llms, setLlms] = useState<LLMModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<Filters>({
+    cost: [],
+    vendor: [],
+    category: [],
+    deployment: []
+  });
 
   useEffect(() => {
     // Simulate a brief loading state for better UX, then load the data
@@ -22,13 +36,130 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const filtered = llms.filter(
-    (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.vendor.toLowerCase().includes(search.toLowerCase()) ||
-      m.useCases.join(" ").toLowerCase().includes(search.toLowerCase()) ||
-      m.capabilities.join(" ").toLowerCase().includes(search.toLowerCase())
-  );
+  // Memoized filtering logic
+  const filteredAndSearched = useMemo(() => {
+    let result = llms;
+
+    // Apply search filter
+    if (search) {
+      result = result.filter(
+        (m) =>
+          m.name.toLowerCase().includes(search.toLowerCase()) ||
+          m.vendor.toLowerCase().includes(search.toLowerCase()) ||
+          m.useCases.join(" ").toLowerCase().includes(search.toLowerCase()) ||
+          m.capabilities.join(" ").toLowerCase().includes(search.toLowerCase()) ||
+          (m.category && m.category.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+
+    // Apply cost filters
+    if (filters.cost.length > 0) {
+      result = result.filter(m => filters.cost.includes(m.cost));
+    }
+
+    // Apply vendor filters
+    if (filters.vendor.length > 0) {
+      result = result.filter(m => filters.vendor.includes(m.vendor));
+    }
+
+    // Apply category filters
+    if (filters.category.length > 0) {
+      result = result.filter(m => m.category && filters.category.includes(m.category));
+    }
+
+    // Apply deployment filters
+    if (filters.deployment.length > 0) {
+      result = result.filter(m => 
+        m.deployment.some(dep => filters.deployment.includes(dep))
+      );
+    }
+
+    return result;
+  }, [llms, search, filters]);
+
+  // Enhanced FilterBar with proper counts
+  const filterBarWithCounts = useMemo(() => {
+    const getFilterCounts = () => {
+      const costTiers = [
+        { value: "Free", count: 0, color: "bg-green-100 text-green-700 border-green-300" },
+        { value: "$", count: 0, color: "bg-blue-100 text-blue-700 border-blue-300" },
+        { value: "$$", count: 0, color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
+        { value: "$$$", count: 0, color: "bg-red-100 text-red-700 border-red-300" }
+      ];
+
+      const vendorColors: Record<string, string> = {
+        "OpenAI": "bg-green-100 text-green-700 border-green-300",
+        "Anthropic": "bg-orange-100 text-orange-700 border-orange-300",
+        "Google": "bg-blue-100 text-blue-700 border-blue-300",
+        "Meta": "bg-purple-100 text-purple-700 border-purple-300",
+        "Mistral AI": "bg-cyan-100 text-cyan-700 border-cyan-300",
+        "Cohere": "bg-pink-100 text-pink-700 border-pink-300",
+        "Perplexity": "bg-indigo-100 text-indigo-700 border-indigo-300",
+        "AI21 Labs": "bg-teal-100 text-teal-700 border-teal-300",
+        "Stability AI": "bg-rose-100 text-rose-700 border-rose-300",
+        "Technology Innovation Institute": "bg-amber-100 text-amber-700 border-amber-300",
+        "Zhipu AI": "bg-emerald-100 text-emerald-700 border-emerald-300"
+      };
+
+      const costCounts = costTiers.map(tier => ({
+        ...tier,
+        count: llms.filter(m => m.cost === tier.value).length
+      }));
+
+      const vendorCounts = Array.from(new Set(llms.map(m => m.vendor)))
+        .map(vendor => ({
+          value: vendor,
+          count: llms.filter(m => m.vendor === vendor).length,
+          color: vendorColors[vendor] || "bg-gray-100 text-gray-700 border-gray-300"
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      const categoryCounts = Array.from(new Set(llms.map(m => m.category).filter(Boolean)))
+        .map(category => ({
+          value: category!,
+          count: llms.filter(m => m.category === category).length
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      const deploymentCounts = Array.from(
+        new Set(llms.flatMap(m => m.deployment))
+      )
+        .map(deployment => ({
+          value: deployment,
+          count: llms.filter(m => m.deployment.includes(deployment)).length
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      return { costCounts, vendorCounts, categoryCounts, deploymentCounts };
+    };
+
+    return getFilterCounts();
+  }, [llms]);
+
+  const handleFilterChange = (filterType: string, value: string) => {
+    setFilters(prev => {
+      const currentFilters = prev[filterType as keyof Filters];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(f => f !== value)
+        : [...currentFilters, value];
+      
+      return {
+        ...prev,
+        [filterType]: newFilters
+      };
+    });
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      cost: [],
+      vendor: [],
+      category: [],
+      deployment: []
+    });
+  };
+
+  const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
 
   const backgroundStyle = {
     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
@@ -76,6 +207,17 @@ export default function HomePage() {
           </motion.div>
         </motion.header>
 
+        {!loading && (
+          <FilterBar
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearAll={clearAllFilters}
+            totalModels={llms.length}
+            filteredCount={filteredAndSearched.length}
+            allModels={llms}
+          />
+        )}
+
         {loading && (
           <motion.div 
             className="flex justify-center items-center py-20"
@@ -91,7 +233,7 @@ export default function HomePage() {
 
         {!loading && (
           <React.Fragment>
-            {filtered.length === 0 && llms.length > 0 && (
+            {filteredAndSearched.length === 0 && llms.length > 0 && (
               <motion.div 
                 className="text-center py-20"
                 initial={{ opacity: 0 }}
@@ -99,7 +241,22 @@ export default function HomePage() {
               >
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-2xl font-semibold text-slate-300 mb-2">No models found</h3>
-                <p className="text-slate-400">Try adjusting your search terms</p>
+                <p className="text-slate-400 mb-4">
+                  {search || hasActiveFilters 
+                    ? "Try adjusting your search terms or filters" 
+                    : "No models match your criteria"
+                  }
+                </p>
+                {hasActiveFilters && (
+                  <motion.button
+                    onClick={clearAllFilters}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Clear All Filters
+                  </motion.button>
+                )}
               </motion.div>
             )}
 
@@ -109,28 +266,46 @@ export default function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              {filtered.map((model, index) => (
+              {filteredAndSearched.map((model, index) => (
                 <motion.div
                   key={model.name}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
                 >
                   <LLMCard model={model} onClick={() => setSelected(model)} />
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Show count of models */}
+            {/* Enhanced Results Summary */}
             <motion.div 
               className="text-center mt-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
-              <p className="text-slate-400">
-                {search ? `${filtered.length} of ${llms.length} models` : `${llms.length} AI models available`}
-              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-slate-400">
+                <p>
+                  {search || hasActiveFilters 
+                    ? `Showing ${filteredAndSearched.length} of ${llms.length} models` 
+                    : `${llms.length} AI models available`
+                  }
+                </p>
+                {(search || hasActiveFilters) && (
+                  <motion.button
+                    onClick={() => {
+                      setSearch("");
+                      clearAllFilters();
+                    }}
+                    className="px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600/50 text-slate-300 rounded-lg transition-all duration-200 text-sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Show All Models
+                  </motion.button>
+                )}
+              </div>
             </motion.div>
           </React.Fragment>
         )}
@@ -141,13 +316,24 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <a 
-            href="/glossary" 
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
-          >
-            <span className="mr-2">📚</span>
-            Glossary & FAQ
-          </a>
+          <div className="flex flex-col items-center gap-4">
+            <a 
+              href="/glossary" 
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+            >
+              <span className="mr-2">📚</span>
+              Glossary & FAQ
+            </a>
+            
+            <motion.div 
+              className="text-slate-400 text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1.5 }}
+            >
+              Built with ❤️ by HumanXAI
+            </motion.div>
+          </div>
         </motion.footer>
       </div>
 

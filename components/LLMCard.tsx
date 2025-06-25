@@ -21,7 +21,11 @@ const vendorColors: Record<string, string> = {
   "Meta": "text-purple-400",
   "Mistral AI": "text-cyan-400",
   "Cohere": "text-pink-400",
-  "Perplexity": "text-indigo-400"
+  "Perplexity": "text-indigo-400",
+  "AI21 Labs": "text-teal-400",
+  "Stability AI": "text-rose-400",
+  "Technology Innovation Institute": "text-amber-400",
+  "Zhipu AI": "text-emerald-400"
 };
 
 export function LLMCard({ model, onClick }: LLMCardProps) {
