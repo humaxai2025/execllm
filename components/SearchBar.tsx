@@ -1,6 +1,11 @@
-import { Input } from "../components/ui/input";
+import { Input } from "./ui/input";
 
-export function SearchBar({ value, onChange }) {
+interface SearchBarProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
     <Input
       type="text"

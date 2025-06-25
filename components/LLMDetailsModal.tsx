@@ -1,13 +1,28 @@
 import { motion, AnimatePresence } from "framer-motion";
 
-const costColors = {
+interface LLMModel {
+  name: string;
+  vendor: string;
+  summary: string;
+  capabilities: string[];
+  useCases: string[];
+  cost: string;
+  deployment: string[];
+}
+
+interface LLMDetailsModalProps {
+  model: LLMModel | null;
+  onClose: () => void;
+}
+
+const costColors: Record<string, string> = {
   "$": "bg-green-100 text-green-700",
   "$$": "bg-yellow-100 text-yellow-700",
   "$$$": "bg-red-100 text-red-700",
   "Free": "bg-blue-100 text-blue-700"
 };
 
-export function LLMDetailsModal({ model, onClose }) {
+export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
   return (
     <AnimatePresence>
       {model && (
@@ -18,7 +33,7 @@ export function LLMDetailsModal({ model, onClose }) {
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative"
+            className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative mx-4"
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0.95 }}

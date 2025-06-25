@@ -1,0 +1,83 @@
+[
+  {
+    "name": "GPT-4",
+    "vendor": "OpenAI",
+    "summary": "State-of-the-art language model with exceptional reasoning and creative capabilities.",
+    "capabilities": ["Text Generation", "Code Writing", "Analysis", "Reasoning"],
+    "useCases": ["Content Creation", "Code Development", "Data Analysis", "Strategic Planning"],
+    "cost": "$$$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "Claude 3 Opus",
+    "vendor": "Anthropic",
+    "summary": "Highly capable AI assistant with strong safety features and reasoning abilities.",
+    "capabilities": ["Text Generation", "Analysis", "Code Writing", "Safety"],
+    "useCases": ["Research", "Writing", "Analysis", "Customer Support"],
+    "cost": "$$$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "Gemini Pro",
+    "vendor": "Google",
+    "summary": "Multimodal AI model with strong performance across text, code, and reasoning tasks.",
+    "capabilities": ["Text Generation", "Multimodal", "Code Writing", "Search"],
+    "useCases": ["Content Creation", "Research", "Development", "Integration"],
+    "cost": "$$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "Llama 2",
+    "vendor": "Meta",
+    "summary": "Open-source language model family with various sizes for different use cases.",
+    "capabilities": ["Text Generation", "Open Source", "Customizable"],
+    "useCases": ["Custom Applications", "Research", "Local Deployment"],
+    "cost": "Free",
+    "deployment": ["Self-hosted", "Cloud", "Local"]
+  },
+  {
+    "name": "PaLM 2",
+    "vendor": "Google",
+    "summary": "Large language model with strong multilingual and reasoning capabilities.",
+    "capabilities": ["Text Generation", "Multilingual", "Reasoning", "Code"],
+    "useCases": ["Translation", "Analysis", "Development", "Research"],
+    "cost": "$$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "Mistral 7B",
+    "vendor": "Mistral AI",
+    "summary": "Efficient open-source model with strong performance for its size.",
+    "capabilities": ["Text Generation", "Open Source", "Efficient", "Code"],
+    "useCases": ["Local Deployment", "Cost-Effective Solutions", "Development"],
+    "cost": "Free",
+    "deployment": ["Self-hosted", "Cloud", "Local"]
+  },
+  {
+    "name": "Claude 3 Sonnet",
+    "vendor": "Anthropic",
+    "summary": "Balanced AI assistant with good performance and cost efficiency.",
+    "capabilities": ["Text Generation", "Analysis", "Safety", "Reasoning"],
+    "useCases": ["Business Applications", "Content Creation", "Support"],
+    "cost": "$$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "GPT-3.5 Turbo",
+    "vendor": "OpenAI",
+    "summary": "Fast and cost-effective language model for most business applications.",
+    "capabilities": ["Text Generation", "Fast Response", "Cost-Effective"],
+    "useCases": ["Chatbots", "Content Generation", "Quick Tasks"],
+    "cost": "$",
+    "deployment": ["Cloud", "API"]
+  },
+  {
+    "name": "Cohere Command",
+    "vendor": "Cohere",
+    "summary": "Enterprise-focused language model with strong business integration features.",
+    "capabilities": ["Text Generation", "Enterprise", "Integration", "Retrieval"],
+    "useCases": ["Enterprise Solutions", "Document Search", "Business Intelligence"],
+    "cost": "$$",
+    "deployment": ["Cloud", "API", "Enterprise"]
+  }
+]

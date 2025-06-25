@@ -1,8 +1,11 @@
-import { Card } from "../../components/ui/card.tsx";
+import { Card } from "../../components/ui/card";
 
+interface GlossaryItem {
+  term: string;
+  def: string;
+}
 
-
-const glossary = [
+const glossary: GlossaryItem[] = [
   {
     term: "LLM",
     def: "Large Language Model. An advanced AI that understands and generates human language."

@@ -1,19 +1,29 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LLMCard } from "../components/LLMCard";
 import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
 
+interface LLMModel {
+  name: string;
+  vendor: string;
+  summary: string;
+  capabilities: string[];
+  useCases: string[];
+  cost: string;
+  deployment: string[];
+}
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
-
+  const [selected, setSelected] = useState<LLMModel | null>(null);
+  const [llms, setLlms] = useState<LLMModel[]>([]);
 
   useEffect(() => {
-    fetch("/data/llms.json")
+    fetch("/llms.json")
       .then((res) => res.json())
-      .then((data) => setLlms(data));
+      .then((data) => setLlms(data))
+      .catch((error) => console.error("Error loading LLM data:", error));
   }, []);
 
   const filtered = llms.filter(
@@ -30,7 +40,7 @@ export default function HomePage() {
           LLM Executive Comparison
         </h1>
         <p className="text-lg text-gray-600 mb-4 text-center max-w-2xl">
-          Compare the world’s top language models for business—fast, easy, and jargon-free.
+          Compare the world's top language models for business—fast, easy, and jargon-free.
         </p>
         <SearchBar value={search} onChange={setSearch} />
       </header>
