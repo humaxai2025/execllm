@@ -15,6 +15,64 @@ interface LLMModel {
   deployment: string[];
 }
 
+// Fallback data in case the JSON file fails to load
+const fallbackData: LLMModel[] = [
+  {
+    name: "GPT-4 Turbo",
+    vendor: "OpenAI",
+    summary: "OpenAI's most advanced model with exceptional reasoning, creativity, and multimodal capabilities. Industry-leading performance for complex business applications.",
+    capabilities: ["Advanced Reasoning", "Code Generation", "Multimodal", "Creative Writing", "Analysis", "Problem Solving"],
+    useCases: ["Strategic Planning", "Content Creation", "Software Development", "Data Analysis", "Legal Review", "Research"],
+    cost: "$$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "Claude 3 Opus",
+    vendor: "Anthropic",
+    summary: "Anthropic's flagship model renowned for safety, nuanced reasoning, and ethical AI principles. Excellent for sensitive business applications.",
+    capabilities: ["Ethical Reasoning", "Safety-First Design", "Long-Form Writing", "Code Review", "Analysis", "Constitutional AI"],
+    useCases: ["Executive Communications", "Policy Development", "Risk Assessment", "Compliance Review", "Research Analysis", "Strategic Consulting"],
+    cost: "$$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "Gemini Ultra",
+    vendor: "Google",
+    summary: "Google's most capable multimodal AI with seamless integration across Google Workspace and enterprise tools.",
+    capabilities: ["Multimodal Processing", "Google Integration", "Advanced Math", "Code Generation", "Data Analysis", "Real-time Information"],
+    useCases: ["Business Intelligence", "Productivity Enhancement", "Data Visualization", "Market Research", "Competitive Analysis", "Workflow Automation"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Google Workspace"]
+  },
+  {
+    name: "Claude 3 Sonnet",
+    vendor: "Anthropic",
+    summary: "The perfect balance of performance and cost-efficiency. Ideal for day-to-day business operations requiring reliable, ethical AI assistance.",
+    capabilities: ["Balanced Performance", "Cost-Effective", "Safety Features", "Business Writing", "Analysis", "Code Support"],
+    useCases: ["Customer Support", "Content Marketing", "Business Communications", "Document Analysis", "Process Optimization", "Training Materials"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "GPT-3.5 Turbo",
+    vendor: "OpenAI",
+    summary: "Fast, reliable, and cost-effective solution for high-volume applications. Perfect for customer-facing applications and rapid content generation.",
+    capabilities: ["Fast Response", "Cost-Effective", "Reliable Output", "API Integration", "Scalable", "Customer Service"],
+    useCases: ["Chatbots", "Customer Service", "Content Generation", "Email Automation", "FAQ Systems", "Social Media"],
+    cost: "$",
+    deployment: ["Cloud", "API", "Mobile Apps"]
+  },
+  {
+    name: "Llama 2 70B",
+    vendor: "Meta",
+    summary: "Meta's open-source powerhouse offering enterprise-grade performance with complete control. Perfect for organizations requiring data sovereignty.",
+    capabilities: ["Open Source", "Customizable", "Enterprise Scale", "Code Generation", "Multilingual", "Privacy-First"],
+    useCases: ["Custom Applications", "On-Premise Deployment", "Research & Development", "Data Privacy Compliance", "Cost Control", "Academic Research"],
+    cost: "Free",
+    deployment: ["Self-Hosted", "Cloud", "On-Premise", "Edge"]
+  }
+];
+
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<LLMModel | null>(null);
@@ -26,17 +84,34 @@ export default function HomePage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/llms.json");
-        if (!response.ok) {
-          throw new Error(`Failed to load data: ${response.status}`);
-        }
-        const data = await response.json();
-        setLlms(Array.isArray(data) ? data : []);
         setError(null);
+        
+        console.log("Attempting to load LLM data from /llms.json");
+        const response = await fetch("/llms.json");
+        
+        console.log("Response status:", response.status);
+        console.log("Response ok:", response.ok);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log("Data loaded successfully:", data);
+        
+        if (Array.isArray(data) && data.length > 0) {
+          setLlms(data);
+        } else {
+          console.warn("Data is not a valid array or is empty, using fallback data");
+          setLlms(fallbackData);
+        }
+        
       } catch (err) {
-        console.error("Error loading LLM data:", err);
-        setError("Failed to load LLM data. Please try again later.");
-        setLlms([]);
+        console.error("Failed to load LLM data:", err);
+        console.log("Using fallback data instead");
+        setLlms(fallbackData);
+        // Don't show error to user since we have fallback data
+        setError(null);
       } finally {
         setLoading(false);
       }
@@ -122,7 +197,7 @@ export default function HomePage() {
           </motion.div>
         )}
 
-        {!loading && !error && (
+        {!loading && (
           <React.Fragment>
             {filtered.length === 0 && llms.length > 0 && (
               <motion.div 
@@ -153,6 +228,18 @@ export default function HomePage() {
                 </motion.div>
               ))}
             </motion.div>
+
+            {llms.length === 0 && (
+              <motion.div 
+                className="text-center py-20"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-2xl font-semibold text-slate-300 mb-2">No data available</h3>
+                <p className="text-slate-400">Please check that the llms.json file is in the public directory</p>
+              </motion.div>
+            )}
           </React.Fragment>
         )}
 
