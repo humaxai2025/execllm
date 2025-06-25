@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type LLMModel } from "../data/llms";
 
@@ -28,9 +28,32 @@ interface FilterSectionProps {
 
 function FilterSection({ title, icon, options, selectedValues, onToggle, isExpanded, onToggleExpanded }: FilterSectionProps) {
   const hasActiveFilters = selectedValues.length > 0;
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleOptionSelect = (value: string) => {
+    onToggle(value);
+    // Close the dropdown after selection
+    if (isExpanded) {
+      onToggleExpanded();
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && isExpanded) {
+        onToggleExpanded();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExpanded, onToggleExpanded]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <motion.button
         onClick={onToggleExpanded}
         className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-200 ${
@@ -73,7 +96,7 @@ function FilterSection({ title, icon, options, selectedValues, onToggle, isExpan
               {options.map((option) => (
                 <motion.button
                   key={option.value}
-                  onClick={() => onToggle(option.value)}
+                  onClick={() => handleOptionSelect(option.value)}
                   className={`flex items-center justify-between p-2 rounded-lg transition-all duration-200 text-left ${
                     selectedValues.includes(option.value)
                       ? option.color || 'bg-purple-600/20 text-purple-300 border border-purple-500/30'
@@ -103,6 +126,20 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
       [section]: !prev[section]
     }));
   };
+
+  // Close all dropdowns when pressing Escape
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setExpandedSections({});
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   // Generate filter options with counts
   const costTiers = [
