@@ -5,7 +5,7 @@ import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
 import { FilterBar } from "../components/FilterBar";
 import { ComparisonBar } from "../components/ComparisonBar";
-import { ComparisonModal } from "../components/ComparisonModal";
+import { ComparisonModal } from "../components/ComparisonModals";
 import { motion } from "framer-motion";
 import { llmsData, type LLMModel } from "../data/llms";
 
