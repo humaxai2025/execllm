@@ -1,0 +1,147 @@
+export interface LLMModel {
+  name: string;
+  vendor: string;
+  summary: string;
+  capabilities: string[];
+  useCases: string[];
+  cost: string;
+  deployment: string[];
+}
+
+export const llmsData: LLMModel[] = [
+  {
+    name: "GPT-4 Turbo",
+    vendor: "OpenAI",
+    summary: "OpenAI's most advanced model with exceptional reasoning, creativity, and multimodal capabilities. Industry-leading performance for complex business applications requiring nuanced understanding and generation.",
+    capabilities: ["Advanced Reasoning", "Code Generation", "Multimodal", "Creative Writing", "Analysis", "Problem Solving"],
+    useCases: ["Strategic Planning", "Content Creation", "Software Development", "Data Analysis", "Legal Document Review", "Research & Development"],
+    cost: "$$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "Claude 3 Opus",
+    vendor: "Anthropic",
+    summary: "Anthropic's flagship model renowned for safety, nuanced reasoning, and ethical AI principles. Excellent for sensitive business applications requiring careful consideration and balanced perspectives.",
+    capabilities: ["Ethical Reasoning", "Safety-First Design", "Long-Form Writing", "Code Review", "Analysis", "Constitutional AI"],
+    useCases: ["Executive Communications", "Policy Development", "Risk Assessment", "Compliance Review", "Research Analysis", "Strategic Consulting"],
+    cost: "$$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "Gemini Ultra",
+    vendor: "Google",
+    summary: "Google's most capable multimodal AI with seamless integration across Google Workspace and enterprise tools. Exceptional at processing diverse data types and complex analytical tasks.",
+    capabilities: ["Multimodal Processing", "Google Integration", "Advanced Math", "Code Generation", "Data Analysis", "Real-time Information"],
+    useCases: ["Business Intelligence", "Productivity Enhancement", "Data Visualization", "Market Research", "Competitive Analysis", "Workflow Automation"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Google Workspace"]
+  },
+  {
+    name: "Claude 3 Sonnet",
+    vendor: "Anthropic",
+    summary: "The perfect balance of performance and cost-efficiency. Ideal for day-to-day business operations requiring reliable, ethical AI assistance without premium pricing.",
+    capabilities: ["Balanced Performance", "Cost-Effective", "Safety Features", "Business Writing", "Analysis", "Code Support"],
+    useCases: ["Customer Support", "Content Marketing", "Business Communications", "Document Analysis", "Process Optimization", "Training Materials"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  },
+  {
+    name: "GPT-3.5 Turbo",
+    vendor: "OpenAI",
+    summary: "Fast, reliable, and cost-effective solution for high-volume applications. Perfect for customer-facing applications and rapid content generation without sacrificing quality.",
+    capabilities: ["Fast Response", "Cost-Effective", "Reliable Output", "API Integration", "Scalable", "Customer Service"],
+    useCases: ["Chatbots", "Customer Service", "Content Generation", "Email Automation", "FAQ Systems", "Social Media"],
+    cost: "$",
+    deployment: ["Cloud", "API", "Mobile Apps"]
+  },
+  {
+    name: "Llama 2 70B",
+    vendor: "Meta",
+    summary: "Meta's open-source powerhouse offering enterprise-grade performance with complete control. Perfect for organizations requiring data sovereignty and custom implementations.",
+    capabilities: ["Open Source", "Customizable", "Enterprise Scale", "Code Generation", "Multilingual", "Privacy-First"],
+    useCases: ["Custom Applications", "On-Premise Deployment", "Research & Development", "Data Privacy Compliance", "Cost Control", "Academic Research"],
+    cost: "Free",
+    deployment: ["Self-Hosted", "Cloud", "On-Premise", "Edge"]
+  },
+  {
+    name: "Mistral Large",
+    vendor: "Mistral AI",
+    summary: "European AI excellence with strong multilingual capabilities and privacy focus. Ideal for international businesses requiring GDPR compliance and cultural sensitivity.",
+    capabilities: ["Multilingual", "GDPR Compliant", "European Values", "Code Generation", "Privacy-Focused", "Cultural Awareness"],
+    useCases: ["International Business", "Regulatory Compliance", "European Markets", "Multilingual Support", "Cultural Analysis", "Privacy-Sensitive Applications"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "European Data Centers"]
+  },
+  {
+    name: "Command R+",
+    vendor: "Cohere",
+    summary: "Enterprise-focused model designed specifically for business applications with powerful RAG capabilities. Excels at connecting AI with your existing business data and workflows.",
+    capabilities: ["Enterprise Integration", "RAG Optimization", "Business Focus", "API-First", "Retrieval Augmented", "Workflow Integration"],
+    useCases: ["Knowledge Management", "Document Search", "Business Intelligence", "Customer Insights", "Internal Q&A", "Process Automation"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Enterprise", "Hybrid"]
+  },
+  {
+    name: "PaLM 2",
+    vendor: "Google",
+    summary: "Google's versatile language model with strong reasoning and coding capabilities. Excellent foundation for businesses already invested in Google's ecosystem.",
+    capabilities: ["Strong Reasoning", "Code Generation", "Multilingual", "Google Ecosystem", "Mathematical Processing", "Scientific Analysis"],
+    useCases: ["Software Development", "Scientific Research", "Educational Content", "Mathematical Analysis", "Translation Services", "Technical Documentation"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Google Cloud Platform"]
+  },
+  {
+    name: "Claude 3 Haiku",
+    vendor: "Anthropic",
+    summary: "Lightning-fast responses with Anthropic's signature safety features. Perfect for real-time applications requiring immediate, reliable AI assistance.",
+    capabilities: ["Ultra-Fast", "Real-Time", "Safety Features", "Lightweight", "Efficient", "Reliable"],
+    useCases: ["Real-Time Chat", "Quick Decisions", "Mobile Applications", "Live Support", "Instant Analysis", "Time-Critical Tasks"],
+    cost: "$",
+    deployment: ["Cloud", "API", "Mobile", "Edge"]
+  },
+  {
+    name: "Mixtral 8x7B",
+    vendor: "Mistral AI",
+    summary: "Open-source mixture of experts model delivering impressive performance at reduced computational cost. Ideal for organizations wanting cutting-edge capabilities with deployment flexibility.",
+    capabilities: ["Open Source", "Mixture of Experts", "Efficient", "Customizable", "High Performance", "Cost-Effective"],
+    useCases: ["Resource-Constrained Environments", "Custom Deployment", "Research Applications", "Cost Optimization", "Edge Computing", "Specialized Tasks"],
+    cost: "Free",
+    deployment: ["Self-Hosted", "Cloud", "Edge", "Local"]
+  },
+  {
+    name: "Gemini Pro",
+    vendor: "Google",
+    summary: "Google's accessible multimodal model offering strong performance across text, code, and reasoning tasks. Great balance of capabilities and accessibility for growing businesses.",
+    capabilities: ["Multimodal", "Accessible Pricing", "Code Generation", "Reasoning", "Google Integration", "Versatile"],
+    useCases: ["Small to Medium Business", "Multimodal Applications", "Code Development", "Content Creation", "Educational Tools", "Startup Applications"],
+    cost: "$",
+    deployment: ["Cloud", "API", "Google Cloud"]
+  },
+  {
+    name: "Perplexity Pro",
+    vendor: "Perplexity",
+    summary: "Search-augmented AI model that combines language generation with real-time web search capabilities. Perfect for research and fact-based business applications.",
+    capabilities: ["Real-time Search", "Fact Checking", "Source Citations", "Research", "Current Information", "Web Integration"],
+    useCases: ["Market Research", "Competitive Intelligence", "Fact Verification", "News Analysis", "Business Research", "Due Diligence"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Web Interface"]
+  },
+  {
+    name: "Anthropic Claude 2",
+    vendor: "Anthropic",
+    summary: "Previous generation Claude model offering reliable performance at a more accessible price point. Excellent for organizations getting started with AI.",
+    capabilities: ["Reliable Performance", "Cost-Effective", "Safety Features", "Document Processing", "Code Analysis", "Writing Support"],
+    useCases: ["Document Analysis", "Content Review", "Basic Automation", "Educational Content", "Writing Assistance", "Code Review"],
+    cost: "$",
+    deployment: ["Cloud", "API"]
+  },
+  {
+    name: "Cohere Command",
+    vendor: "Cohere",
+    summary: "Enterprise-grade conversational AI model designed for business applications with strong instruction following and task completion capabilities.",
+    capabilities: ["Instruction Following", "Business Focus", "Task Completion", "API Integration", "Enterprise Ready", "Multi-language"],
+    useCases: ["Task Automation", "Business Process", "Customer Service", "Content Generation", "Workflow Integration", "Enterprise Chat"],
+    cost: "$$",
+    deployment: ["Cloud", "API", "Enterprise"]
+  }
+];

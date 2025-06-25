@@ -1,15 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-
-interface LLMModel {
-  name: string;
-  vendor: string;
-  summary: string;
-  capabilities: string[];
-  useCases: string[];
-  cost: string;
-  deployment: string[];
-}
+import { type LLMModel } from "../data/llms";
 
 interface LLMCardProps {
   model: LLMModel;
@@ -29,7 +20,8 @@ const vendorColors: Record<string, string> = {
   "Google": "text-blue-400",
   "Meta": "text-purple-400",
   "Mistral AI": "text-cyan-400",
-  "Cohere": "text-pink-400"
+  "Cohere": "text-pink-400",
+  "Perplexity": "text-indigo-400"
 };
 
 export function LLMCard({ model, onClick }: LLMCardProps) {
