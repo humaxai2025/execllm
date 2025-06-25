@@ -1,5 +1,5 @@
-import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
+import { Card, CardContent } from "./ui/card.tsx";
+import { Badge } from "./ui/badge.tsx";
 import { motion } from "framer-motion";
 
 interface LLMModel {
