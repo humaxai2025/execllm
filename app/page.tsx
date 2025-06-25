@@ -55,7 +55,7 @@ export default function HomePage() {
           m.vendor.toLowerCase().includes(search.toLowerCase()) ||
           m.useCases.join(" ").toLowerCase().includes(search.toLowerCase()) ||
           m.capabilities.join(" ").toLowerCase().includes(search.toLowerCase()) ||
-          m.category.toLowerCase().includes(search.toLowerCase())
+          (m.category && m.category.toLowerCase().includes(search.toLowerCase()))
       );
     }
 
