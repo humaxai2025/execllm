@@ -4,6 +4,8 @@ import { LLMCard } from "../components/LLMCard";
 import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
 import { FilterBar } from "../components/FilterBar";
+import { ComparisonBar } from "../components/ComparisonBar";
+import { ComparisonModal } from "../components/ComparisonModal";
 import { motion } from "framer-motion";
 import { llmsData, type LLMModel } from "../data/llms";
 
@@ -25,6 +27,11 @@ export default function HomePage() {
     category: [],
     deployment: []
   });
+  
+  // Comparison state
+  const [isComparisonMode, setIsComparisonMode] = useState(false);
+  const [selectedForComparison, setSelectedForComparison] = useState<LLMModel[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
 
   useEffect(() => {
     // Simulate a brief loading state for better UX, then load the data
@@ -159,6 +166,45 @@ export default function HomePage() {
     });
   };
 
+  // Comparison handlers
+  const toggleComparisonMode = () => {
+    setIsComparisonMode(!isComparisonMode);
+    if (!isComparisonMode) {
+      setSelectedForComparison([]);
+    }
+  };
+
+  const handleCompareToggle = (model: LLMModel) => {
+    setSelectedForComparison(prev => {
+      const isAlreadySelected = prev.find(m => m.name === model.name);
+      if (isAlreadySelected) {
+        return prev.filter(m => m.name !== model.name);
+      } else {
+        // Limit to 4 models for comparison
+        if (prev.length >= 4) {
+          // Could add a toast notification here
+          console.log("Maximum 4 models can be compared at once");
+          return prev;
+        }
+        return [...prev, model];
+      }
+    });
+  };
+
+  const openComparisonModal = () => {
+    if (selectedForComparison.length >= 2) {
+      setShowComparisonModal(true);
+    }
+  };
+
+  const clearComparisonSelection = () => {
+    setSelectedForComparison([]);
+  };
+
+  const removeFromComparison = (modelName: string) => {
+    setSelectedForComparison(prev => prev.filter(m => m.name !== modelName));
+  };
+
   const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
 
   const backgroundStyle = {
@@ -208,14 +254,25 @@ export default function HomePage() {
         </motion.header>
 
         {!loading && (
-          <FilterBar
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearAll={clearAllFilters}
-            totalModels={llms.length}
-            filteredCount={filteredAndSearched.length}
-            allModels={llms}
-          />
+          <>
+            <FilterBar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearAll={clearAllFilters}
+              totalModels={llms.length}
+              filteredCount={filteredAndSearched.length}
+              allModels={llms}
+            />
+            
+            <ComparisonBar
+              selectedModels={selectedForComparison}
+              isComparisonMode={isComparisonMode}
+              onToggleComparisonMode={toggleComparisonMode}
+              onCompare={openComparisonModal}
+              onClearSelection={clearComparisonSelection}
+              onRemoveModel={removeFromComparison}
+            />
+          </>
         )}
 
         {loading && (
@@ -257,6 +314,23 @@ export default function HomePage() {
                     Clear All Filters
                   </motion.button>
                 )}
+              </motion.div>
+            )}
+
+            {/* Comparison Mode Help Text */}
+            {isComparisonMode && selectedForComparison.length === 0 && filteredAndSearched.length > 0 && (
+              <motion.div 
+                className="text-center py-12 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border border-purple-500/30 rounded-2xl p-6 max-w-md mx-auto">
+                  <div className="text-4xl mb-3">⚖️</div>
+                  <h3 className="text-lg font-semibold text-purple-300 mb-2">Comparison Mode Active</h3>
+                  <p className="text-slate-400 text-sm">
+                    Click the checkboxes on model cards to select up to 4 models for comparison
+                  </p>
+                </div>
               </motion.div>
             )}
 
@@ -338,6 +412,14 @@ export default function HomePage() {
       </div>
 
       <LLMDetailsModal model={selected} onClose={() => setSelected(null)} />
+      
+      {showComparisonModal && (
+        <ComparisonModal
+          models={selectedForComparison}
+          onClose={() => setShowComparisonModal(false)}
+          onRemoveModel={removeFromComparison}
+        />
+      )}
     </div>
   );
 }
