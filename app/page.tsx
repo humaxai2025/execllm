@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import llms from "@/data/llms.json";
-import { LLMCard } from "@/components/LLMCard";
-import { LLMDetailsModal } from "@/components/LLMDetailsModal";
-import { SearchBar } from "@/components/SearchBar";
+import llms from "../data/llms.json";
+import { LLMCard } from "../components/LLMCard";
+import { LLMDetailsModal } from "../components/LLMDetailsModal";
+import { SearchBar } from "./components/SearchBar";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
