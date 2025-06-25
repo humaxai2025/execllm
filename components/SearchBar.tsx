@@ -1,4 +1,4 @@
-import { Input } from "./ui/input.tsx";
+import { Input } from "./ui/input";
 
 interface SearchBarProps {
   value: string;

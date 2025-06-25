@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { LLMCard } from "../components/LLMCard.tsx";
-import { LLMDetailsModal } from "../components/LLMDetailsModal.tsx";
-import { SearchBar } from "../components/SearchBar.tsx";
+import { LLMCard } from "../components/LLMCard";
+import { LLMDetailsModal } from "../components/LLMDetailsModal";
+import { SearchBar } from "../components/SearchBar";
 
 interface LLMModel {
   name: string;
