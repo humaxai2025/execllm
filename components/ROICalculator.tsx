@@ -149,17 +149,16 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
 
   const calculations = useMemo(() => {
     // Get industry and use case benchmarks with proper type handling
-    const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks] as Record<string, typeof defaultBenchmark> | undefined;
-    const defaultBenchmark = {
+    const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks];
+    const benchmark = industryData?.[inputs.useCase as keyof typeof industryData] || {
       automationRate: 0.35,
       accuracyRate: 0.85,
       adoptionMonths: 6,
       errorImpact: 0.20
     };
-    const benchmark: typeof defaultBenchmark = industryData?.[inputs.useCase] || defaultBenchmark;
 
     // Get model-specific performance
-    const performance = modelPerformance[model.name as keyof typeof modelPerformance] || {
+    const performance = modelPerformance[model.name] || {
       accuracy: 0.85,
       reliability: 0.93,
       speedScore: 0.88
@@ -222,16 +221,8 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
     let confidence = 0.65; // Base confidence
     
     // Increase confidence for well-documented industries/use cases
-    if (
-      ((): boolean => {
-        const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks];
-        return (
-          industryData &&
-          Object.prototype.hasOwnProperty.call(industryData, inputs.useCase)
-        );
-      })()
-    ) confidence += 0.15;
-    if (modelPerformance[model.name as keyof typeof modelPerformance]) confidence += 0.10;
+    if (industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks]?.[inputs.useCase as any]) confidence += 0.15;
+    if (modelPerformance[model.name]) confidence += 0.10;
     if (performance.reliability > 0.95) confidence += 0.05;
     if (inputs.riskTolerance === 'conservative') confidence += 0.05;
 
@@ -320,104 +311,490 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
     const currentDate = new Date().toLocaleDateString();
     const { confidence, riskFactors, scenarios } = calculations;
     
-    const content = `
-EXECUTIVE AI ROI ANALYSIS
-Model: ${model.name} by ${model.vendor}
-Analysis Date: ${currentDate}
-Confidence Level: ${(confidence * 100).toFixed(0)}%
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Executive AI ROI Analysis - ${model.name}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1a202c;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .header .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+      margin: 0;
+    }
+    .confidence-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 25px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    .recommendation {
+      padding: 30px 40px;
+      text-align: center;
+      border-bottom: 3px solid #e2e8f0;
+    }
+    .recommendation.strong { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .recommendation.recommend { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+    .recommendation.conditional { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .recommendation.caution { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+    .recommendation h2 {
+      margin: 0 0 15px 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .recommendation p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 40px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .metric-card {
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      border: 2px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .metric-card.primary {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border-color: #3b82f6;
+    }
+    .metric-card.success {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      border-color: #10b981;
+    }
+    .metric-card.warning {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #f59e0b;
+    }
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 5px 0;
+      color: #1a202c;
+    }
+    .metric-label {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .section h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #e2e8f0;
+    }
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .info-card h4 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .info-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .info-list li:last-child {
+      border-bottom: none;
+    }
+    .info-list .label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+    .info-list .value {
+      color: #1f2937;
+      font-weight: 600;
+    }
+    .positive { color: #059669; }
+    .negative { color: #dc2626; }
+    .neutral { color: #6b7280; }
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .scenario-card {
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid #cbd5e1;
+    }
+    .scenario-card.moderate {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border-color: #3b82f6;
+    }
+    .scenario-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 10px 0;
+    }
+    .scenario-roi {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 0;
+    }
+    .risk-factors {
+      background: linear-gradient(135deg, #fef2f2, #fee2e2);
+      border: 2px solid #fca5a5;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .risk-factors h4 {
+      color: #dc2626;
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .risk-factors ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .risk-factors li {
+      color: #7f1d1d;
+      margin: 8px 0;
+    }
+    .next-steps {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 2px solid #6ee7b7;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 30px 0;
+    }
+    .next-steps h4 {
+      color: #065f46;
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .next-steps ol {
+      color: #064e3b;
+      margin: 0;
+      padding-left: 20px;
+    }
+    .next-steps li {
+      margin: 8px 0;
+      font-weight: 500;
+    }
+    .footer {
+      background: #f8fafc;
+      padding: 30px 40px;
+      border-top: 3px solid #e2e8f0;
+      text-align: center;
+      color: #6b7280;
+    }
+    .footer h4 {
+      color: #374151;
+      margin: 0 0 10px 0;
+    }
+    .methodology {
+      background: #fefce8;
+      border: 2px solid #fde047;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .methodology h4 {
+      color: #a16207;
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .methodology p {
+      color: #713f12;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Executive AI ROI Analysis</h1>
+      <p class="subtitle">${model.name} by ${model.vendor}</p>
+      <div class="confidence-badge">Analysis Confidence: ${(confidence * 100).toFixed(0)}%</div>
+      <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Generated on ${currentDate}</p>
+    </div>
 
-${'='.repeat(60)}
-EXECUTIVE SUMMARY
-${'='.repeat(60)}
+    <div class="recommendation ${recommendation.level.toLowerCase().replace(/\s+/g, '-')}">
+      <h2>${recommendation.level}</h2>
+      <p>${recommendation.message}</p>
+    </div>
 
-RECOMMENDATION: ${recommendation.level}
-${recommendation.message}
+    <div class="content">
+      <div class="section">
+        <h3>📊 Executive Summary</h3>
+        <div class="metrics-grid">
+          <div class="metric-card primary">
+            <div class="metric-value">${calculations.threeYearROI > 0 ? '+' : ''}${calculations.threeYearROI.toFixed(0)}%</div>
+            <div class="metric-label">3-Year ROI</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-value">${calculations.paybackMonths.toFixed(1)}</div>
+            <div class="metric-label">Payback Months</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="metric-value">${calculations.netMonthlySavings.toLocaleString()}</div>
+            <div class="metric-label">Monthly Savings</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${(calculations.effectiveAutomationRate * 100).toFixed(0)}%</div>
+            <div class="metric-label">Automation Rate</div>
+          </div>
+        </div>
+      </div>
 
-FINANCIAL IMPACT:
-• Monthly Net Savings: $${calculations.netMonthlySavings.toLocaleString()}
-• Annual Savings: $${calculations.annualSavings.toLocaleString()}
-• Implementation Investment: $${calculations.totalImplementationCost.toLocaleString()}
-• Payback Period: ${calculations.paybackMonths.toFixed(1)} months
-• 3-Year ROI: ${calculations.threeYearROI.toFixed(0)}%
+      <div class="section">
+        <h3>🎯 Scenario Analysis</h3>
+        <div class="scenario-grid">
+          <div class="scenario-card">
+            <div class="scenario-title">Conservative</div>
+            <div class="scenario-roi">${scenarios.conservative.roi.toFixed(0)}%</div>
+          </div>
+          <div class="scenario-card moderate">
+            <div class="scenario-title">Most Likely</div>
+            <div class="scenario-roi">${calculations.threeYearROI.toFixed(0)}%</div>
+          </div>
+          <div class="scenario-card">
+            <div class="scenario-title">Optimistic</div>
+            <div class="scenario-roi">${scenarios.aggressive.roi.toFixed(0)}%</div>
+          </div>
+        </div>
+      </div>
 
-SCENARIO ANALYSIS:
-• Conservative Case: ${scenarios.conservative.roi.toFixed(0)}% ROI (${(scenarios.conservative.automation * 100).toFixed(0)}% automation)
-• Most Likely Case: ${calculations.threeYearROI.toFixed(0)}% ROI (${(calculations.effectiveAutomationRate * 100).toFixed(0)}% automation)
-• Optimistic Case: ${scenarios.aggressive.roi.toFixed(0)}% ROI (${(scenarios.aggressive.automation * 100).toFixed(0)}% automation)
+      <div class="section">
+        <div class="two-column">
+          <div class="info-card">
+            <h4>💰 Monthly Financial Impact</h4>
+            <ul class="info-list">
+              <li>
+                <span class="label">Hours Automated:</span>
+                <span class="value">${calculations.automatedHours.toFixed(0)} hours</span>
+              </li>
+              <li>
+                <span class="label">Gross Savings:</span>
+                <span class="value positive">${calculations.grossSavings.toLocaleString()}</span>
+              </li>
+              <li>
+                <span class="label">AI/API Costs:</span>
+                <span class="value negative">-${calculations.monthlyAICost.toLocaleString()}</span>
+              </li>
+              <li>
+                <span class="label">Infrastructure:</span>
+                <span class="value negative">-${calculations.infrastructureCost.toLocaleString()}</span>
+              </li>
+              <li>
+                <span class="label">Quality/Error Costs:</span>
+                <span class="value negative">-${(calculations.errorCost + calculations.qualityCost).toLocaleString()}</span>
+              </li>
+              <li style="border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 8px;">
+                <span class="label"><strong>Net Monthly Savings:</strong></span>
+                <span class="value positive"><strong>${calculations.netMonthlySavings.toLocaleString()}</strong></span>
+              </li>
+            </ul>
+          </div>
 
-OPERATIONAL IMPACT:
-• Expected Automation Rate: ${(calculations.effectiveAutomationRate * 100).toFixed(0)}%
-• Hours Automated Monthly: ${calculations.automatedHours.toFixed(0)} hours
-• Model Accuracy: ${(calculations.expectedAccuracy * 100).toFixed(0)}%
-• Time to Full Value: ${calculations.adoptionMonths} months
+          <div class="info-card">
+            <h4>🏗️ Implementation Investment</h4>
+            <ul class="info-list">
+              <li>
+                <span class="label">Integration:</span>
+                <span class="value">${calculations.integrationCost.toLocaleString()}</span>
+              </li>
+              <li>
+                <span class="label">Training:</span>
+                <span class="value">${calculations.trainingCost.toLocaleString()}</span>
+              </li>
+              <li>
+                <span class="label">Change Management:</span>
+                <span class="value">${calculations.changeManagementCost.toLocaleString()}</span>
+              </li>
+              <li style="border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 8px;">
+                <span class="label"><strong>Total Investment:</strong></span>
+                <span class="value"><strong>${calculations.totalImplementationCost.toLocaleString()}</strong></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-COST BREAKDOWN:
-• Monthly AI/API Costs: $${calculations.monthlyAICost.toLocaleString()}
-• Infrastructure Costs: $${calculations.infrastructureCost.toLocaleString()}/month
-• Integration Investment: $${calculations.integrationCost.toLocaleString()}
-• Training Investment: $${calculations.trainingCost.toLocaleString()}
-• Change Management: $${calculations.changeManagementCost.toLocaleString()}
+      <div class="section">
+        <div class="two-column">
+          <div class="info-card">
+            <h4>⚡ Performance Expectations</h4>
+            <ul class="info-list">
+              <li>
+                <span class="label">Automation Rate:</span>
+                <span class="value">${(calculations.effectiveAutomationRate * 100).toFixed(0)}%</span>
+              </li>
+              <li>
+                <span class="label">Expected Accuracy:</span>
+                <span class="value">${(calculations.expectedAccuracy * 100).toFixed(0)}%</span>
+              </li>
+              <li>
+                <span class="label">Time to Full Value:</span>
+                <span class="value">${calculations.adoptionMonths} months</span>
+              </li>
+              <li>
+                <span class="label">Annual Savings:</span>
+                <span class="value positive">${calculations.annualSavings.toLocaleString()}</span>
+              </li>
+            </ul>
+          </div>
 
-RISK ASSESSMENT:
-${riskFactors.length > 0 ? riskFactors.map(risk => `• ${risk}`).join('\n') : '• No major risk factors identified'}
+          <div class="info-card">
+            <h4>📋 Business Parameters</h4>
+            <ul class="info-list">
+              <li>
+                <span class="label">Industry:</span>
+                <span class="value">${industries.find(i => i.value === inputs.industry)?.label}</span>
+              </li>
+              <li>
+                <span class="label">Use Case:</span>
+                <span class="value">${calculations.template.label}</span>
+              </li>
+              <li>
+                <span class="label">Company Size:</span>
+                <span class="value">${inputs.companySize.replace('-', ' ')}</span>
+              </li>
+              <li>
+                <span class="label">Monthly Volume:</span>
+                <span class="value">${inputs.monthlyVolume.toLocaleString()} tasks</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-IMPLEMENTATION PARAMETERS:
-• Industry: ${industries.find(i => i.value === inputs.industry)?.label}
-• Use Case: ${calculations.template.label}
-• Company Size: ${inputs.companySize.replace('-', ' ')}
-• Team Size: ${inputs.teamSize} people
-• Monthly Volume: ${inputs.monthlyVolume.toLocaleString()} tasks
-• Risk Profile: ${inputs.riskTolerance}
+      ${riskFactors.length > 0 ? `
+      <div class="risk-factors">
+        <h4>⚠️ Risk Factors to Monitor</h4>
+        <ul>
+          ${riskFactors.map(risk => `<li>${risk}</li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
 
-METHODOLOGY & CONFIDENCE:
-This analysis incorporates:
-✓ Industry-specific automation benchmarks from ${inputs.industry}
-✓ Real vendor pricing data (${model.vendor})
-✓ Third-party model performance metrics
-✓ Implementation complexity factors
-✓ Error rates and quality costs
-✓ Change management and adoption curves
+      ${recommendation.level === 'STRONG RECOMMEND' || recommendation.level === 'RECOMMEND' ? `
+      <div class="next-steps">
+        <h4>🚀 Recommended Next Steps</h4>
+        <ol>
+          <li>Present this business case to stakeholders and secure executive sponsorship</li>
+          <li>Define pilot program scope with ${Math.ceil(inputs.monthlyVolume * 0.2).toLocaleString()} tasks/month over 8-12 weeks</li>
+          <li>Engage with ${model.vendor} for detailed pricing and implementation support</li>
+          <li>Establish project team with technical lead, business analyst, and change manager</li>
+          <li>Plan phased rollout with success criteria of >${(calculations.effectiveAutomationRate * 0.8 * 100).toFixed(0)}% automation rate</li>
+          <li>Allocate pilot budget of approximately ${(calculations.totalImplementationCost * 0.3).toLocaleString()}</li>
+        </ol>
+      </div>
+      ` : `
+      <div class="next-steps">
+        <h4>📋 Recommended Actions</h4>
+        <ol>
+          <li>Review and address identified risk factors</li>
+          <li>Consider alternative AI models or implementation approaches</li>
+          <li>Reassess use case fit and business requirements</li>
+          <li>Explore optimization opportunities to improve ROI projections</li>
+          <li>Revisit analysis with updated parameters or different scenarios</li>
+        </ol>
+      </div>
+      `}
 
-Confidence in projections: ${(confidence * 100).toFixed(0)}%
-Data sources: Industry benchmarks, vendor pricing, implementation studies
+      <div class="methodology">
+        <h4>🔬 Methodology & Data Sources</h4>
+        <p>This analysis incorporates industry-specific automation benchmarks, real vendor pricing data, third-party model performance metrics, implementation complexity factors, error rates, quality costs, and change management requirements. Confidence level of ${(confidence * 100).toFixed(0)}% reflects data quality and assumption validity.</p>
+      </div>
+    </div>
 
-${'='.repeat(60)}
-NEXT STEPS
-${'='.repeat(60)}
+    <div class="footer">
+      <h4>ExecLLM - Executive AI Decision Platform</h4>
+      <p>Built with ❤️ by HumanXAI | Support: https://buymeacoffee.com/humanxai</p>
+      <p style="margin-top: 15px; font-size: 12px;"><strong>Disclaimer:</strong> Projections based on industry data and vendor specifications. Actual results may vary. Conduct pilot testing to validate assumptions.</p>
+    </div>
+  </div>
+</body>
+</html>`;
 
-${recommendation.level === 'STRONG RECOMMEND' || recommendation.level === 'RECOMMEND' ? `
-1. Present business case to stakeholders
-2. Define pilot program scope and success metrics
-3. Engage with ${model.vendor} for pricing and implementation support
-4. Establish project team and governance
-5. Plan phased rollout starting with pilot
-
-PILOT RECOMMENDATION:
-• Start with ${Math.ceil(inputs.monthlyVolume * 0.2).toLocaleString()} tasks/month
-• Duration: 8-12 weeks
-• Success criteria: >${(calculations.effectiveAutomationRate * 0.8 * 100).toFixed(0)}% automation rate
-• Budget: $${(calculations.totalImplementationCost * 0.3).toLocaleString()} for pilot phase
-` : `
-1. Review risk factors and mitigation strategies
-2. Consider alternative models or approaches
-3. Reassess use case fit and requirements
-4. Explore optimization opportunities
-5. Revisit analysis with updated parameters
-`}
-
-Generated by ExecLLM - Executive AI Decision Platform
-For updated analysis and model comparisons, visit ExecLLM
-Support: https://buymeacoffee.com/humanxai
-
-DISCLAIMER: Projections based on industry data and vendor specifications.
-Actual results may vary. Conduct pilot testing to validate assumptions.
-`;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${model.name.replace(/\s+/g, '-')}-Executive-ROI-Analysis-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `${model.name.replace(/\s+/g, '-')}-Executive-ROI-Analysis-${new Date().toISOString().split('T')[0]}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -459,7 +836,7 @@ Actual results may vary. Conduct pilot testing to validate assumptions.
                 onClick={exportEnhancedROI}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 text-sm font-medium"
               >
-                Export Executive Report
+                Export HTML Report
               </button>
               <button
                 onClick={onClose}
