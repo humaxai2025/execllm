@@ -143,11 +143,9 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
 
   // Generate filter options with counts - FIXED COST TIERS
   const costTiers = [
-    { value: "Free", count: allModels.filter(m => m.cost === "Free").length, color: "bg-green-600/20 text-green-300 border border-green-500/30" },
-    { value: "$", count: allModels.filter(m => m.cost === "$").length, color: "bg-blue-600/20 text-blue-300 border border-blue-500/30" },
-    { value: "$$", count: allModels.filter(m => m.cost === "$$").length, color: "bg-yellow-600/20 text-yellow-300 border border-yellow-500/30" },
-    { value: "$$$", count: allModels.filter(m => m.cost === "$$$").length, color: "bg-red-600/20 text-red-300 border border-red-500/30" }
-  ];
+  { value: "Free", count: allModels.filter(m => m.cost === "Free").length, color: "bg-green-600/20 text-green-300 border border-green-500/30" },
+  { value: "Paid", count: allModels.filter(m => m.cost === "Paid").length, color: "bg-blue-600/20 text-blue-300 border border-blue-500/30" }
+];
 
   const vendorColors: Record<string, string> = {
     "OpenAI": "bg-green-600/20 text-green-300 border border-green-500/30",
