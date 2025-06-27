@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { LLMCard } from "../components/LLMCard";
-import { LLMDetailsModal } from "../components/LLMDetailsModal";
-import { SearchBar } from "../components/SearchBar";
-import { FilterBar } from "../components/FilterBar";
-import { ComparisonBar } from "../components/ComparisonBar";
-import { ComparisonModal } from "../components/ComparisonModals";
+import { LLMCard } from "../../components/LLMCard";
+import { LLMDetailsModal } from "../../components/LLMDetailsModal";
+import { SearchBar } from "../../components/SearchBar";
+import { FilterBar } from "../../components/FilterBar";
+import { ComparisonBar } from "../../components/ComparisonBar";
+import { ComparisonModal } from "../../components/ComparisonModals";
 import { motion } from "framer-motion";
-import { llmsData, type LLMModel } from "../data/llms";
+import { llmsData, type LLMModel } from "../../data/llms";
 
 interface Filters {
   cost: string[];
