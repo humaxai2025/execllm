@@ -8,10 +8,8 @@ interface LLMDetailsModalProps {
 }
 
 const costColors: Record<string, string> = {
-  "$": "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
-  "$$": "bg-gradient-to-r from-yellow-500 to-orange-500 text-white",
-  "$$$": "bg-gradient-to-r from-red-500 to-pink-500 text-white",
-  "Free": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+  "Free": "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
+  "Paid": "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
 };
 
 const vendorColors: Record<string, string> = {

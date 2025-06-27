@@ -9,10 +9,8 @@ interface ComparisonModalProps {
 }
 
 const costColors: Record<string, string> = {
-  "$": "bg-green-500 text-white",
-  "$$": "bg-yellow-500 text-white",
-  "$$$": "bg-red-500 text-white",
-  "Free": "bg-blue-500 text-white"
+  "Free": "bg-green-500 text-white",
+  "Paid": "bg-blue-500 text-white"
 };
 
 const vendorColors: Record<string, string> = {
