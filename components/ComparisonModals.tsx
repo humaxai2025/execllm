@@ -130,7 +130,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
   };
 
   const exportToPDF = () => {
-    // Create formatted HTML content
+    // Create formatted HTML content for PDF
     const currentDate = new Date().toLocaleDateString();
     
     const htmlContent = `
@@ -165,16 +165,6 @@ For the latest information and interactive comparisons, visit ExecLLM.
       color: #64748b;
       font-size: 16px;
       margin: 8px 0 0 0;
-    }
-    .print-info {
-      background: #e3f2fd;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-      border-left: 4px solid #2196f3;
-      text-align: center;
-      font-size: 14px;
-      color: #0d47a1;
     }
     .meta-info {
       background: #f8fafc;
@@ -218,7 +208,6 @@ For the latest information and interactive comparisons, visit ExecLLM.
       font-weight: 700;
       font-size: 14px;
       color: white;
-      ${models.some(m => m.cost === 'Free') ? 'background: linear-gradient(135deg, #10b981, #059669);' : 'background: linear-gradient(135deg, #3b82f6, #6366f1);'}
     }
     .cost-free { background: linear-gradient(135deg, #10b981, #059669) !important; }
     .cost-paid { background: linear-gradient(135deg, #3b82f6, #6366f1) !important; }
@@ -273,7 +262,6 @@ For the latest information and interactive comparisons, visit ExecLLM.
     }
     @media print {
       body { margin: 0; padding: 15mm; }
-      .print-info { display: none; }
       .model-section { page-break-inside: avoid; margin-bottom: 20px; }
     }
     @page { margin: 1in; size: A4; }
@@ -283,10 +271,6 @@ For the latest information and interactive comparisons, visit ExecLLM.
   <div class="header">
     <h1>ExecLLM</h1>
     <div class="subtitle">AI Model Comparison Report</div>
-  </div>
-
-  <div class="print-info">
-    <strong>💡 To save as PDF:</strong> Press Ctrl+P (Windows) or Cmd+P (Mac), then select "Save as PDF" as destination
   </div>
   
   <div class="meta-info">
@@ -352,16 +336,35 @@ For the latest information and interactive comparisons, visit ExecLLM.
 </body>
 </html>`;
 
-    // Create and download HTML file
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ExecLLM-Comparison-Report-${models.map(m => m.name.replace(/\s+/g, '-')).join('-vs-')}-${new Date().toISOString().split('T')[0]}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Create a new window for PDF generation
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      
+      // Wait for content to load, then trigger print
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print();
+          // Close the window after printing (optional)
+          printWindow.onafterprint = () => {
+            printWindow.close();
+          };
+        }, 500);
+      };
+    } else {
+      // Fallback: download as HTML if popup is blocked
+      alert('Pop-up blocked. Downloading as HTML file instead. You can open it and use Ctrl+P (Cmd+P on Mac) to save as PDF.');
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ExecLLM-Comparison-Report-${models.map(m => m.name.replace(/\s+/g, '-')).join('-vs-')}-${new Date().toISOString().split('T')[0]}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const renderCellContent = (model: LLMModel, row: typeof comparisonRows[0]) => {
@@ -482,8 +485,8 @@ For the latest information and interactive comparisons, visit ExecLLM.
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                             <div className="text-left">
-                              <div className="font-medium">PDF Report</div>
-                              <div className="text-xs text-slate-400">Formatted document (.pdf)</div>
+                              <div className="font-medium">Save as PDF</div>
+                              <div className="text-xs text-slate-400">Opens print dialog to save PDF</div>
                             </div>
                           </motion.button>
                         </div>
