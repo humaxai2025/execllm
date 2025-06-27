@@ -40,7 +40,6 @@ const comparisonRows = [
 ];
 
 export function ComparisonModal({ models, onClose, onRemoveModel }: ComparisonModalProps) {
-  const [exportFormat, setExportFormat] = useState<'text' | 'pdf'>('text');
   const [showExportOptions, setShowExportOptions] = useState(false);
 
   // Close modal on Escape key
@@ -72,8 +71,8 @@ export function ComparisonModal({ models, onClose, onRemoveModel }: ComparisonMo
     };
   }, [onClose, showExportOptions]);
 
-  const exportComparison = () => {
-    if (exportFormat === 'pdf') {
+  const exportComparison = (format: 'text' | 'pdf') => {
+    if (format === 'pdf') {
       exportToPDF();
     } else {
       exportToText();
@@ -480,10 +479,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
                       >
                         <div className="space-y-2">
                           <motion.button
-                            onClick={() => {
-                              setExportFormat('text');
-                              exportComparison();
-                            }}
+                            onClick={() => exportComparison('text')}
                             className="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 hover:text-white transition-all duration-200"
                             whileHover={{ scale: 1.02 }}
                           >
@@ -497,10 +493,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
                           </motion.button>
                           
                           <motion.button
-                            onClick={() => {
-                              setExportFormat('pdf');
-                              exportComparison();
-                            }}
+                            onClick={() => exportComparison('pdf')}
                             className="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 hover:text-white transition-all duration-200"
                             whileHover={{ scale: 1.02 }}
                           >
