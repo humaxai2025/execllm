@@ -10,6 +10,7 @@ import { ROICalculator } from "../components/ROICalculator";
 import { RoadmapGenerator } from "../components/RoadmapGenerator";
 import { motion } from "framer-motion";
 import { llmsData, type LLMModel } from "../data/llms";
+import { Analytics } from "@vercel/analytics/next"
 
 interface Filters {
   cost: string[];
