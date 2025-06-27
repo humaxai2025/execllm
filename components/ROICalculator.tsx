@@ -149,16 +149,17 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
 
   const calculations = useMemo(() => {
     // Get industry and use case benchmarks with proper type handling
-    const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks];
-    const benchmark = industryData?.[inputs.useCase as keyof typeof industryData] || {
+    const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks] as Record<string, typeof defaultBenchmark> | undefined;
+    const defaultBenchmark = {
       automationRate: 0.35,
       accuracyRate: 0.85,
       adoptionMonths: 6,
       errorImpact: 0.20
     };
+    const benchmark: typeof defaultBenchmark = industryData?.[inputs.useCase] || defaultBenchmark;
 
     // Get model-specific performance
-    const performance = modelPerformance[model.name] || {
+    const performance = modelPerformance[model.name as keyof typeof modelPerformance] || {
       accuracy: 0.85,
       reliability: 0.93,
       speedScore: 0.88
@@ -221,8 +222,16 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
     let confidence = 0.65; // Base confidence
     
     // Increase confidence for well-documented industries/use cases
-    if (industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks]?.[inputs.useCase as any]) confidence += 0.15;
-    if (modelPerformance[model.name]) confidence += 0.10;
+    if (
+      ((): boolean => {
+        const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks];
+        return (
+          industryData &&
+          Object.prototype.hasOwnProperty.call(industryData, inputs.useCase)
+        );
+      })()
+    ) confidence += 0.15;
+    if (modelPerformance[model.name as keyof typeof modelPerformance]) confidence += 0.10;
     if (performance.reliability > 0.95) confidence += 0.05;
     if (inputs.riskTolerance === 'conservative') confidence += 0.05;
 
