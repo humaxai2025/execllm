@@ -8,6 +8,7 @@ interface FilterBarProps {
     vendor: string[];
     category: string[];
     deployment: string[];
+    industry: string[];
   };
   onFilterChange: (filterType: string, value: string) => void;
   onClearAll: () => void;
@@ -170,6 +171,24 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     "Zhipu AI": "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
   };
 
+  // Industry colors for better visual distinction
+  const industryColors: Record<string, string> = {
+    "Financial Services": "bg-green-600/20 text-green-300 border border-green-500/30",
+    "Healthcare & Life Sciences": "bg-red-600/20 text-red-300 border border-red-500/30",
+    "Legal & Compliance": "bg-blue-600/20 text-blue-300 border border-blue-500/30",
+    "Technology & Software": "bg-purple-600/20 text-purple-300 border border-purple-500/30",
+    "Marketing & Advertising": "bg-pink-600/20 text-pink-300 border border-pink-500/30",
+    "Education & Training": "bg-yellow-600/20 text-yellow-300 border border-yellow-500/30",
+    "Manufacturing": "bg-orange-600/20 text-orange-300 border border-orange-500/30",
+    "Retail & E-commerce": "bg-cyan-600/20 text-cyan-300 border border-cyan-500/30",
+    "Consulting & Professional Services": "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30",
+    "Media & Entertainment": "bg-rose-600/20 text-rose-300 border border-rose-500/30",
+    "Government & Public Sector": "bg-teal-600/20 text-teal-300 border border-teal-500/30",
+    "Research & Development": "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30",
+    "Customer Service": "bg-amber-600/20 text-amber-300 border border-amber-500/30",
+    "International Business": "bg-lime-600/20 text-lime-300 border border-lime-500/30"
+  };
+
   // Get unique vendors and sort by count
   const vendors = Array.from(new Set(allModels.map(m => m.vendor)))
     .map(vendor => ({
@@ -194,6 +213,15 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
       value: deployment,
       count: allModels.filter(m => m.deployment.includes(deployment)).length,
       color: "bg-slate-600/20 text-slate-300 border border-slate-500/30"
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Get unique industries and sort by count
+  const industries = Array.from(new Set(allModels.flatMap(m => m.industries)))
+    .map(industry => ({
+      value: industry,
+      count: allModels.filter(m => m.industries.includes(industry)).length,
+      color: industryColors[industry] || "bg-slate-600/20 text-slate-300 border border-slate-500/30"
     }))
     .sort((a, b) => b.count - a.count);
 
@@ -244,8 +272,18 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
         </div>
       </div>
 
-      {/* Filter Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Filter Grid - Now with 5 columns to accommodate industry filter */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <FilterSection
+          title="Industry"
+          icon="🏭"
+          options={industries}
+          selectedValues={filters.industry}
+          onToggle={(value) => onFilterChange('industry', value)}
+          isExpanded={expandedSections.industry}
+          onToggleExpanded={() => toggleSection('industry')}
+        />
+        
         <FilterSection
           title="Cost"
           icon="💰"
@@ -318,6 +356,25 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
               ))
             )}
           </div>
+        </motion.div>
+      )}
+
+      {/* Industry Use Case Insights */}
+      {filters.industry.length > 0 && (
+        <motion.div 
+          className="mt-6 p-4 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 border border-purple-500/30 rounded-xl"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">💡</span>
+            <h3 className="text-sm font-semibold text-purple-300">Industry Insights</h3>
+          </div>
+          <p className="text-sm text-slate-300">
+            Showing AI models optimized for <span className="text-purple-300 font-medium">{filters.industry[0]}</span>. 
+            These models have been specifically validated for industry use cases, compliance requirements, and business workflows.
+          </p>
         </motion.div>
       )}
     </motion.div>

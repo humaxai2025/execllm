@@ -15,6 +15,8 @@ export interface LLMModel {
   complianceLevel: "Enterprise" | "Standard" | "Basic";
   vendorSupport: string;
   riskLevel: "Low" | "Medium" | "High";
+  // New industry mapping field
+  industries: string[];
 }
 
 export const llmsData: LLMModel[] = [
@@ -34,7 +36,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Premium Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Financial Services", "Legal & Compliance", "Technology & Software", "Consulting & Professional Services", "Healthcare & Life Sciences", "Research & Development"]
   },
   {
     name: "Claude 3 Opus",
@@ -51,7 +54,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Premium Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Financial Services", "Legal & Compliance", "Government & Public Sector", "Healthcare & Life Sciences", "Consulting & Professional Services"]
   },
   {
     name: "Gemini Ultra",
@@ -68,7 +72,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Enterprise Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Technology & Software", "Marketing & Advertising", "Retail & E-commerce", "Manufacturing", "Financial Services", "Education & Training"]
   },
 
   // Tier 2: Balanced Performance Models
@@ -87,7 +92,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Marketing & Advertising", "Retail & E-commerce", "Education & Training", "Technology & Software", "Consulting & Professional Services"]
   },
   {
     name: "GPT-4",
@@ -104,7 +110,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Premium Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Technology & Software", "Financial Services", "Marketing & Advertising", "Education & Training", "Consulting & Professional Services", "Media & Entertainment"]
   },
   {
     name: "Gemini Pro",
@@ -121,7 +128,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Technology & Software", "Education & Training", "Marketing & Advertising", "Retail & E-commerce"]
   },
 
   // Tier 3: Cost-Effective Models
@@ -140,7 +148,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Standard Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Retail & E-commerce", "Marketing & Advertising", "Customer Service", "Technology & Software"]
   },
   {
     name: "Claude 3 Haiku",
@@ -157,7 +166,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Financial Services", "Healthcare & Life Sciences", "Customer Service", "Technology & Software"]
   },
 
   // Open Source Models
@@ -176,7 +186,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "High",
     complianceLevel: "Basic",
     vendorSupport: "Community Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Research & Development", "Technology & Software", "Government & Public Sector", "Education & Training"]
   },
   {
     name: "Mixtral 8x7B",
@@ -193,7 +204,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Basic",
     vendorSupport: "Community Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Research & Development", "Technology & Software", "Manufacturing", "Education & Training"]
   },
   {
     name: "Code Llama 34B",
@@ -210,7 +222,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Basic",
     vendorSupport: "Community Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Technology & Software", "Education & Training", "Research & Development"]
   },
 
   // European & International Models
@@ -229,7 +242,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "European Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Financial Services", "Legal & Compliance", "Government & Public Sector", "Technology & Software"]
   },
   {
     name: "Mistral Medium",
@@ -246,7 +260,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "European Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Financial Services", "Legal & Compliance", "Government & Public Sector", "Marketing & Advertising"]
   },
 
   // Specialized & Enterprise Models
@@ -265,7 +280,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Enterprise",
     vendorSupport: "Enterprise Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Financial Services", "Legal & Compliance", "Consulting & Professional Services", "Healthcare & Life Sciences"]
   },
   {
     name: "PaLM 2",
@@ -282,7 +298,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "Google Cloud Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Technology & Software", "Research & Development", "Education & Training", "Healthcare & Life Sciences"]
   },
   {
     name: "GPT-4 Vision",
@@ -299,7 +316,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Enterprise",
     vendorSupport: "24/7 Premium Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Healthcare & Life Sciences", "Manufacturing", "Legal & Compliance", "Marketing & Advertising", "Retail & E-commerce"]
   },
 
   // Emerging & Specialized Models
@@ -318,7 +336,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Standard Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Financial Services", "Consulting & Professional Services", "Media & Entertainment", "Research & Development"]
   },
   {
     name: "Claude 2",
@@ -335,7 +354,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Standard Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Education & Training", "Technology & Software", "Marketing & Advertising"]
   },
   {
     name: "Cohere Command",
@@ -352,7 +372,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Enterprise",
     vendorSupport: "Enterprise Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Financial Services", "Technology & Software", "Customer Service", "Consulting & Professional Services"]
   },
 
   // Advanced & Specialized Models
@@ -371,7 +392,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Standard Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Marketing & Advertising", "Media & Entertainment", "Retail & E-commerce", "Education & Training"]
   },
   {
     name: "Whisper",
@@ -388,7 +410,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Standard Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Healthcare & Life Sciences", "Legal & Compliance", "Media & Entertainment", "Education & Training", "Customer Service"]
   },
   {
     name: "Codex",
@@ -405,7 +428,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Standard",
     vendorSupport: "Developer Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Technology & Software", "Education & Training"]
   },
 
   // Emerging International Models
@@ -424,7 +448,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "High",
     complianceLevel: "Basic",
     vendorSupport: "Community Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Research & Development", "Education & Training", "Government & Public Sector"]
   },
   {
     name: "ChatGLM3",
@@ -441,7 +466,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Basic",
     vendorSupport: "Regional Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Technology & Software", "International Business", "Education & Training"]
   },
 
   // Specialized Business Models
@@ -460,7 +486,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Low",
     complianceLevel: "Standard",
     vendorSupport: "Business Support",
-    riskLevel: "Low"
+    riskLevel: "Low",
+    industries: ["Customer Service", "Retail & E-commerce", "Technology & Software"]
   },
   {
     name: "Jurassic-2",
@@ -477,7 +504,8 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "Medium",
     complianceLevel: "Standard",
     vendorSupport: "Enterprise Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Marketing & Advertising", "Consulting & Professional Services", "Media & Entertainment"]
   },
   {
     name: "StableLM",
@@ -494,6 +522,7 @@ export const llmsData: LLMModel[] = [
     integrationComplexity: "High",
     complianceLevel: "Basic",
     vendorSupport: "Community Support",
-    riskLevel: "Medium"
+    riskLevel: "Medium",
+    industries: ["Research & Development", "Technology & Software", "Education & Training"]
   }
 ];

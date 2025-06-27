@@ -15,7 +15,8 @@ const costColors: Record<string, string> = {
   "$": "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
   "$$": "bg-gradient-to-r from-yellow-500 to-orange-500 text-white",
   "$$$": "bg-gradient-to-r from-red-500 to-pink-500 text-white",
-  "Free": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+  "Free": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white",
+  "Paid": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
 };
 
 const vendorColors: Record<string, string> = {
@@ -30,6 +31,23 @@ const vendorColors: Record<string, string> = {
   "Stability AI": "text-rose-400",
   "Technology Innovation Institute": "text-amber-400",
   "Zhipu AI": "text-emerald-400"
+};
+
+const industryColors: Record<string, string> = {
+  "Financial Services": "bg-green-900/30 text-green-300 border-green-700/30",
+  "Healthcare & Life Sciences": "bg-red-900/30 text-red-300 border-red-700/30",
+  "Legal & Compliance": "bg-blue-900/30 text-blue-300 border-blue-700/30",
+  "Technology & Software": "bg-purple-900/30 text-purple-300 border-purple-700/30",
+  "Marketing & Advertising": "bg-pink-900/30 text-pink-300 border-pink-700/30",
+  "Education & Training": "bg-yellow-900/30 text-yellow-300 border-yellow-700/30",
+  "Manufacturing": "bg-orange-900/30 text-orange-300 border-orange-700/30",
+  "Retail & E-commerce": "bg-cyan-900/30 text-cyan-300 border-cyan-700/30",
+  "Consulting & Professional Services": "bg-indigo-900/30 text-indigo-300 border-indigo-700/30",
+  "Media & Entertainment": "bg-rose-900/30 text-rose-300 border-rose-700/30",
+  "Government & Public Sector": "bg-teal-900/30 text-teal-300 border-teal-700/30",
+  "Research & Development": "bg-emerald-900/30 text-emerald-300 border-emerald-700/30",
+  "Customer Service": "bg-amber-900/30 text-amber-300 border-amber-700/30",
+  "International Business": "bg-lime-900/30 text-lime-300 border-lime-700/30"
 };
 
 export const LLMCard = React.memo<LLMCardProps>(({ 
@@ -128,8 +146,30 @@ export const LLMCard = React.memo<LLMCardProps>(({
             {model.summary}
           </p>
 
-          {/* Capabilities */}
+          {/* Industries */}
           <div className="space-y-3">
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 mb-2">INDUSTRIES</h4>
+              <div className="flex flex-wrap gap-1">
+                {model.industries.slice(0, 2).map((industry) => (
+                  <span
+                    key={industry}
+                    className={`px-2 py-1 text-xs rounded-lg border ${
+                      industryColors[industry] || "bg-slate-700/50 text-slate-400 border-slate-600/50"
+                    }`}
+                  >
+                    {industry}
+                  </span>
+                ))}
+                {model.industries.length > 2 && (
+                  <span className="px-2 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg">
+                    +{model.industries.length - 2}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Capabilities */}
             <div>
               <h4 className="text-xs font-semibold text-slate-400 mb-2">CAPABILITIES</h4>
               <div className="flex flex-wrap gap-1">

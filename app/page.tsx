@@ -14,6 +14,7 @@ interface Filters {
   vendor: string[];
   category: string[];
   deployment: string[];
+  industry: string[];
 }
 
 export default function HomePage() {
@@ -25,7 +26,8 @@ export default function HomePage() {
     cost: [],
     vendor: [],
     category: [],
-    deployment: []
+    deployment: [],
+    industry: []
   });
   
   // Comparison state
@@ -55,7 +57,8 @@ export default function HomePage() {
           m.vendor.toLowerCase().includes(search.toLowerCase()) ||
           m.useCases.join(" ").toLowerCase().includes(search.toLowerCase()) ||
           m.capabilities.join(" ").toLowerCase().includes(search.toLowerCase()) ||
-          (m.category && m.category.toLowerCase().includes(search.toLowerCase()))
+          (m.category && m.category.toLowerCase().includes(search.toLowerCase())) ||
+          m.industries.join(" ").toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -78,6 +81,13 @@ export default function HomePage() {
     if (filters.deployment.length > 0) {
       result = result.filter(m => 
         m.deployment.some(dep => filters.deployment.includes(dep))
+      );
+    }
+
+    // Apply industry filters
+    if (filters.industry.length > 0) {
+      result = result.filter(m => 
+        m.industries.some(industry => filters.industry.includes(industry))
       );
     }
 
@@ -137,7 +147,16 @@ export default function HomePage() {
         }))
         .sort((a, b) => b.count - a.count);
 
-      return { costCounts, vendorCounts, categoryCounts, deploymentCounts };
+      const industryCounts = Array.from(
+        new Set(llms.flatMap(m => m.industries))
+      )
+        .map(industry => ({
+          value: industry,
+          count: llms.filter(m => m.industries.includes(industry)).length
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      return { costCounts, vendorCounts, categoryCounts, deploymentCounts, industryCounts };
     };
 
     return getFilterCounts();
@@ -161,7 +180,8 @@ export default function HomePage() {
       cost: [],
       vendor: [],
       category: [],
-      deployment: []
+      deployment: [],
+      industry: []
     });
   };
 
@@ -385,6 +405,26 @@ export default function HomePage() {
                     Click the checkboxes on model cards to select up to 4 models for comparison
                   </p>
                 </div>
+              </motion.div>
+            )}
+
+            {/* Industry-Specific Recommendations */}
+            {filters.industry.length > 0 && filteredAndSearched.length > 0 && (
+              <motion.div 
+                className="mb-8 p-6 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 border border-purple-500/30 rounded-2xl max-w-4xl mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl">🎯</span>
+                  <h3 className="text-xl font-semibold text-purple-300">
+                    {filters.industry[0]} Recommendations
+                  </h3>
+                </div>
+                <p className="text-slate-300 leading-relaxed">
+                  These {filteredAndSearched.length} AI models have been specifically mapped to <span className="text-purple-300 font-medium">{filters.industry[0]}</span> use cases. 
+                  They've been validated for industry-specific requirements including compliance, security, and workflow integration.
+                </p>
               </motion.div>
             )}
 

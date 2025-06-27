@@ -26,6 +26,23 @@ const vendorColors: Record<string, string> = {
   "Zhipu AI": "text-emerald-400"
 };
 
+const industryColors: Record<string, string> = {
+  "Financial Services": "bg-green-900/30 text-green-300 border-green-700/30",
+  "Healthcare & Life Sciences": "bg-red-900/30 text-red-300 border-red-700/30",
+  "Legal & Compliance": "bg-blue-900/30 text-blue-300 border-blue-700/30",
+  "Technology & Software": "bg-purple-900/30 text-purple-300 border-purple-700/30",
+  "Marketing & Advertising": "bg-pink-900/30 text-pink-300 border-pink-700/30",
+  "Education & Training": "bg-yellow-900/30 text-yellow-300 border-yellow-700/30",
+  "Manufacturing": "bg-orange-900/30 text-orange-300 border-orange-700/30",
+  "Retail & E-commerce": "bg-cyan-900/30 text-cyan-300 border-cyan-700/30",
+  "Consulting & Professional Services": "bg-indigo-900/30 text-indigo-300 border-indigo-700/30",
+  "Media & Entertainment": "bg-rose-900/30 text-rose-300 border-rose-700/30",
+  "Government & Public Sector": "bg-teal-900/30 text-teal-300 border-teal-700/30",
+  "Research & Development": "bg-emerald-900/30 text-emerald-300 border-emerald-700/30",
+  "Customer Service": "bg-amber-900/30 text-amber-300 border-amber-700/30",
+  "International Business": "bg-lime-900/30 text-lime-300 border-lime-700/30"
+};
+
 export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
   // Close modal on Escape key
   useEffect(() => {
@@ -92,7 +109,7 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 p-8 space-y-6 max-h-[60vh] overflow-y-auto">
+            <div className="relative z-10 p-8 space-y-6 max-h-[60vh] overflow-y-auto modal-scroll">
               {/* Summary */}
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
@@ -102,6 +119,27 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
                 <p className="text-slate-300 leading-relaxed">
                   {model.summary}
                 </p>
+              </div>
+
+              {/* Industry Focus */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full mr-3"></span>
+                  Industry Focus
+                </h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {model.industries.map((industry) => (
+                    <div
+                      key={industry}
+                      className={`flex items-center p-3 rounded-xl border ${
+                        industryColors[industry] || "bg-slate-900/20 text-slate-300 border-slate-700/30"
+                      }`}
+                    >
+                      <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full mr-3"></div>
+                      <span className="font-medium">{industry}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Capabilities */}
@@ -159,6 +197,88 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
                   ))}
                 </div>
               </div>
+
+              {/* Executive Summary */}
+              {(model.timeToValue || model.integrationComplexity || model.complianceLevel || model.vendorSupport || model.riskLevel) && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full mr-3"></span>
+                    Executive Summary
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3 bg-slate-800/30 p-4 rounded-xl">
+                    {model.timeToValue && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Time to Value:</span>
+                        <span className="text-white font-medium">{model.timeToValue}</span>
+                      </div>
+                    )}
+                    {model.integrationComplexity && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Integration:</span>
+                        <span className={`font-medium ${
+                          model.integrationComplexity === 'Low' ? 'text-green-400' :
+                          model.integrationComplexity === 'Medium' ? 'text-yellow-400' : 'text-red-400'
+                        }`}>
+                          {model.integrationComplexity}
+                        </span>
+                      </div>
+                    )}
+                    {model.complianceLevel && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Compliance:</span>
+                        <span className="text-white font-medium">{model.complianceLevel}</span>
+                      </div>
+                    )}
+                    {model.vendorSupport && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Support:</span>
+                        <span className="text-white font-medium">{model.vendorSupport}</span>
+                      </div>
+                    )}
+                    {model.riskLevel && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Risk Level:</span>
+                        <span className={`font-medium ${
+                          model.riskLevel === 'Low' ? 'text-green-400' :
+                          model.riskLevel === 'Medium' ? 'text-yellow-400' : 'text-red-400'
+                        }`}>
+                          {model.riskLevel}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Technical Details */}
+              {(model.category || model.releaseDate || model.modelSize) && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full mr-3"></span>
+                    Technical Details
+                  </h3>
+                  <div className="bg-slate-800/30 p-4 rounded-xl space-y-2">
+                    {model.category && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Category:</span>
+                        <span className="text-white font-medium">{model.category}</span>
+                      </div>
+                    )}
+                    {model.releaseDate && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Release Year:</span>
+                        <span className="text-white font-medium">{model.releaseDate}</span>
+                      </div>
+                    )}
+                    {model.modelSize && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Model Size:</span>
+                        <span className="text-white font-medium">{model.modelSize}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </motion.div>

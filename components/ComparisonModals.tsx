@@ -30,9 +30,14 @@ const vendorColors: Record<string, string> = {
 const comparisonRows = [
   { key: "vendor", label: "Vendor", type: "text" },
   { key: "cost", label: "Cost Tier", type: "badge" },
+  { key: "industries", label: "Target Industries", type: "list" },
   { key: "category", label: "Category", type: "text" },
   { key: "releaseDate", label: "Release Year", type: "text" },
   { key: "modelSize", label: "Model Size", type: "text" },
+  { key: "timeToValue", label: "Time to Value", type: "text" },
+  { key: "integrationComplexity", label: "Integration Complexity", type: "complexity" },
+  { key: "complianceLevel", label: "Compliance Level", type: "text" },
+  { key: "riskLevel", label: "Risk Level", type: "risk" },
   { key: "capabilities", label: "Key Capabilities", type: "list" },
   { key: "useCases", label: "Best Use Cases", type: "list" },
   { key: "deployment", label: "Deployment Options", type: "list" },
@@ -71,9 +76,9 @@ export function ComparisonModal({ models, onClose, onRemoveModel }: ComparisonMo
     };
   }, [onClose, showExportOptions]);
 
-  const exportComparison = (format: 'text' | 'pdf') => {
-    if (format === 'pdf') {
-      exportToPDF();
+  const exportComparison = (format: 'text' | 'html') => {
+    if (format === 'html') {
+      exportToHTML();
     } else {
       exportToText();
     }
@@ -94,9 +99,14 @@ ${models.map((model, index) => `
 ${index + 1}. ${model.name} by ${model.vendor}
 ${'─'.repeat(40)}
 Cost Tier: ${model.cost}
+Target Industries: ${model.industries.join(', ')}
 Category: ${model.category || 'N/A'}
 Release Year: ${model.releaseDate || 'N/A'}
 Model Size: ${model.modelSize || 'N/A'}
+Time to Value: ${model.timeToValue || 'N/A'}
+Integration Complexity: ${model.integrationComplexity || 'N/A'}
+Compliance Level: ${model.complianceLevel || 'N/A'}
+Risk Level: ${model.riskLevel || 'N/A'}
 
 Key Capabilities:
 ${model.capabilities.map(cap => `• ${cap}`).join('\n')}
@@ -129,8 +139,8 @@ For the latest information and interactive comparisons, visit ExecLLM.
     URL.revokeObjectURL(url);
   };
 
-  const exportToPDF = () => {
-    // Create formatted HTML content for PDF
+  const exportToHTML = () => {
+    // Create formatted HTML content
     const currentDate = new Date().toLocaleDateString();
     
     const htmlContent = `
@@ -233,11 +243,19 @@ For the latest information and interactive comparisons, visit ExecLLM.
       font-size: 14px;
       line-height: 1.6;
     }
-    .capability-grid, .usecase-grid, .deployment-grid {
+    .industries-grid, .capability-grid, .usecase-grid, .deployment-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 8px;
       margin-top: 10px;
+    }
+    .industry-item {
+      background: #e0f2fe;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      border-left: 3px solid #0288d1;
+      font-weight: 600;
     }
     .capability-item, .usecase-item, .deployment-item {
       background: #f1f5f9;
@@ -246,7 +264,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
       font-size: 13px;
       border-left: 3px solid #6366f1;
     }
-    .tech-details {
+    .tech-details, .exec-details {
       background: #f8fafc;
       padding: 12px;
       border-radius: 6px;
@@ -276,7 +294,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
   <div class="meta-info">
     <strong>Report Generated:</strong> ${currentDate}<br>
     <strong>Models Compared:</strong> ${models.length}<br>
-    <strong>Type:</strong> Executive Business Analysis
+    <strong>Type:</strong> Executive Business Analysis with Industry Mapping
   </div>
 
   ${models.map((model, index) => `
@@ -292,6 +310,24 @@ For the latest information and interactive comparisons, visit ExecLLM.
       <div class="detail-section">
         <div class="detail-title">Overview</div>
         <div class="summary-text">${model.summary}</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-title">Target Industries</div>
+        <div class="industries-grid">
+          ${model.industries.map(industry => `<div class="industry-item">🏭 ${industry}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-title">Executive Summary</div>
+        <div class="exec-details">
+          <strong>Time to Value:</strong> ${model.timeToValue || 'N/A'}<br>
+          <strong>Integration Complexity:</strong> ${model.integrationComplexity || 'N/A'}<br>
+          <strong>Compliance Level:</strong> ${model.complianceLevel || 'N/A'}<br>
+          <strong>Risk Level:</strong> ${model.riskLevel || 'N/A'}<br>
+          <strong>Vendor Support:</strong> ${model.vendorSupport || 'N/A'}
+        </div>
       </div>
 
       <div class="detail-section">
@@ -336,35 +372,16 @@ For the latest information and interactive comparisons, visit ExecLLM.
 </body>
 </html>`;
 
-    // Create a new window for PDF generation
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      
-      // Wait for content to load, then trigger print
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          // Close the window after printing (optional)
-          printWindow.onafterprint = () => {
-            printWindow.close();
-          };
-        }, 500);
-      };
-    } else {
-      // Fallback: download as HTML if popup is blocked
-      alert('Pop-up blocked. Downloading as HTML file instead. You can open it and use Ctrl+P (Cmd+P on Mac) to save as PDF.');
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ExecLLM-Comparison-Report-${models.map(m => m.name.replace(/\s+/g, '-')).join('-vs-')}-${new Date().toISOString().split('T')[0]}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
+    // Create and download HTML file
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ExecLLM-Comparison-Report-${models.map(m => m.name.replace(/\s+/g, '-')).join('-vs-')}-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const renderCellContent = (model: LLMModel, row: typeof comparisonRows[0]) => {
@@ -381,17 +398,46 @@ For the latest information and interactive comparisons, visit ExecLLM.
         }
         return value;
       
+      case "complexity":
+        const complexityColors = {
+          'Low': 'text-green-400',
+          'Medium': 'text-yellow-400',
+          'High': 'text-red-400'
+        };
+        return (
+          <span className={`font-medium ${complexityColors[value as keyof typeof complexityColors] || 'text-slate-300'}`}>
+            {value}
+          </span>
+        );
+      
+      case "risk":
+        const riskColors = {
+          'Low': 'text-green-400',
+          'Medium': 'text-yellow-400',
+          'High': 'text-red-400'
+        };
+        return (
+          <span className={`font-medium ${riskColors[value as keyof typeof riskColors] || 'text-slate-300'}`}>
+            {value}
+          </span>
+        );
+      
       case "list":
         if (Array.isArray(value)) {
+          const maxItems = row.key === "industries" ? 3 : 4;
           return (
             <div className="space-y-1">
-              {value.slice(0, 4).map((item, index) => (
-                <div key={index} className="text-sm bg-slate-700/30 px-2 py-1 rounded">
-                  {item}
+              {value.slice(0, maxItems).map((item, index) => (
+                <div key={index} className={`text-sm px-2 py-1 rounded ${
+                  row.key === "industries" 
+                    ? "bg-cyan-700/30 text-cyan-300" 
+                    : "bg-slate-700/30 text-slate-300"
+                }`}>
+                  {row.key === "industries" && "🏭 "}{item}
                 </div>
               ))}
-              {value.length > 4 && (
-                <div className="text-xs text-slate-400">+{value.length - 4} more</div>
+              {value.length > maxItems && (
+                <div className="text-xs text-slate-400">+{value.length - maxItems} more</div>
               )}
             </div>
           );
@@ -406,6 +452,12 @@ For the latest information and interactive comparisons, visit ExecLLM.
         return value || "N/A";
     }
   };
+
+  // Find common industries across selected models
+  const commonIndustries = models.length > 1 ? 
+    models[0].industries.filter(industry => 
+      models.every(model => model.industries.includes(industry))
+    ) : [];
 
   return (
     <AnimatePresence>
@@ -434,6 +486,23 @@ For the latest information and interactive comparisons, visit ExecLLM.
                 <p className="text-slate-400">
                   Comparing {models.length} AI model{models.length !== 1 ? 's' : ''} side-by-side
                 </p>
+                {commonIndustries.length > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-sm text-slate-400">Common Industries:</span>
+                    <div className="flex gap-1">
+                      {commonIndustries.slice(0, 3).map(industry => (
+                        <span key={industry} className="px-2 py-1 bg-cyan-900/30 text-cyan-300 text-xs rounded border border-cyan-700/30">
+                          🏭 {industry}
+                        </span>
+                      ))}
+                      {commonIndustries.length > 3 && (
+                        <span className="px-2 py-1 bg-slate-700/50 text-slate-400 text-xs rounded">
+                          +{commonIndustries.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="flex items-center gap-3">
@@ -477,7 +546,7 @@ For the latest information and interactive comparisons, visit ExecLLM.
                           </motion.button>
                           
                           <motion.button
-                            onClick={() => exportComparison('pdf')}
+                            onClick={() => exportComparison('html')}
                             className="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 hover:text-white transition-all duration-200"
                             whileHover={{ scale: 1.02 }}
                           >
@@ -485,8 +554,8 @@ For the latest information and interactive comparisons, visit ExecLLM.
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                             <div className="text-left">
-                              <div className="font-medium">Save as PDF</div>
-                              <div className="text-xs text-slate-400">Opens print dialog to save PDF</div>
+                              <div className="font-medium">HTML Report</div>
+                              <div className="text-xs text-slate-400">Formatted document (.html)</div>
                             </div>
                           </motion.button>
                         </div>
