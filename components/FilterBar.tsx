@@ -141,12 +141,12 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     };
   }, []);
 
-  // Generate filter options with counts
+  // Generate filter options with counts - FIXED COST TIERS
   const costTiers = [
     { value: "Free", count: allModels.filter(m => m.cost === "Free").length, color: "bg-green-600/20 text-green-300 border border-green-500/30" },
     { value: "$", count: allModels.filter(m => m.cost === "$").length, color: "bg-blue-600/20 text-blue-300 border border-blue-500/30" },
-    { value: "$", count: allModels.filter(m => m.cost === "$").length, color: "bg-yellow-600/20 text-yellow-300 border border-yellow-500/30" },
-    { value: "$$", count: allModels.filter(m => m.cost === "$$").length, color: "bg-red-600/20 text-red-300 border border-red-500/30" }
+    { value: "$$", count: allModels.filter(m => m.cost === "$$").length, color: "bg-yellow-600/20 text-yellow-300 border border-yellow-500/30" },
+    { value: "$$$", count: allModels.filter(m => m.cost === "$$$").length, color: "bg-red-600/20 text-red-300 border border-red-500/30" }
   ];
 
   const vendorColors: Record<string, string> = {
@@ -156,9 +156,14 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     "Meta": "bg-purple-600/20 text-purple-300 border border-purple-500/30",
     "Mistral AI": "bg-cyan-600/20 text-cyan-300 border border-cyan-500/30",
     "Cohere": "bg-pink-600/20 text-pink-300 border border-pink-500/30",
-    "Perplexity": "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
+    "Perplexity": "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30",
+    "AI21 Labs": "bg-teal-600/20 text-teal-300 border border-teal-500/30",
+    "Stability AI": "bg-rose-600/20 text-rose-300 border border-rose-500/30",
+    "Technology Innovation Institute": "bg-amber-600/20 text-amber-300 border border-amber-500/30",
+    "Zhipu AI": "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
   };
 
+  // Get unique vendors and sort by count
   const vendors = Array.from(new Set(allModels.map(m => m.vendor)))
     .map(vendor => ({
       value: vendor,
@@ -167,17 +172,21 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     }))
     .sort((a, b) => b.count - a.count);
 
+  // Get unique categories and sort by count  
   const categories = Array.from(new Set(allModels.map(m => m.category).filter(Boolean)))
     .map(category => ({
       value: category!,
-      count: allModels.filter(m => m.category === category).length
+      count: allModels.filter(m => m.category === category).length,
+      color: "bg-slate-600/20 text-slate-300 border border-slate-500/30"
     }))
     .sort((a, b) => b.count - a.count);
 
+  // Get unique deployment options and sort by count
   const deployments = Array.from(new Set(allModels.flatMap(m => m.deployment)))
     .map(deployment => ({
       value: deployment,
-      count: allModels.filter(m => m.deployment.includes(deployment)).length
+      count: allModels.filter(m => m.deployment.includes(deployment)).length,
+      color: "bg-slate-600/20 text-slate-300 border border-slate-500/30"
     }))
     .sort((a, b) => b.count - a.count);
 
