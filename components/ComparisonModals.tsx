@@ -381,7 +381,7 @@ For the latest information and interactive comparisons, visit execllm.humanxiaho
 
         <div class="footer">
           <p><strong>ExecLLM</strong> - Executive AI Model Comparison Platform | Built with ❤️ by HumanXAI</p>
-          <p>For the latest information and interactive comparisons, visit ExecLLM</p>
+          <p>For the latest information and interactive comparisons, visit execllm.humanxai.com</p>
         </div>
       </body>
       </html>
