@@ -265,7 +265,7 @@ export default function HomePage() {
           </>
         )}
 
-        {/* Action Buttons - Comparison, Glossary, Support */}
+        {/* Action Buttons - Comparison and Glossary */}
         {!loading && (
           <motion.div 
             className="flex flex-col items-center gap-6 mb-8"
@@ -273,41 +273,38 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            {/* Comparison Mode Toggle */}
-            <motion.button
-              onClick={toggleComparisonMode}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 text-lg ${
-                isComparisonMode 
-                  ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg shadow-purple-500/25' 
-                  : 'bg-slate-800/80 border-2 border-slate-700/50 text-slate-300 hover:border-purple-500/50 hover:bg-slate-700/80'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
-              </svg>
-              {isComparisonMode ? 'Exit Comparison Mode' : 'Enter Comparison Mode'}
-              {selectedForComparison.length > 0 && (
-                <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-bold">
-                  {selectedForComparison.length}
-                </span>
-              )}
-            </motion.button>
-
-            {/* Secondary Action Buttons */}
+            {/* Primary Action Buttons - Same Row */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <motion.a 
-                href="/glossary" 
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg border border-slate-600/50"
+              <motion.button
+                onClick={toggleComparisonMode}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 text-lg ${
+                  isComparisonMode 
+                    ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg shadow-purple-500/25' 
+                    : 'bg-slate-800/80 border-2 border-slate-700/50 text-slate-300 hover:border-purple-500/50 hover:bg-slate-700/80'
+                }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="mr-2">📚</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
+                </svg>
+                {isComparisonMode ? 'Exit Comparison Mode' : 'Enter Comparison Mode'}
+                {selectedForComparison.length > 0 && (
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-bold">
+                    {selectedForComparison.length}
+                  </span>
+                )}
+              </motion.button>
+
+              <motion.a 
+                href="/glossary" 
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg border border-slate-600/50 text-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="mr-3">📚</span>
                 Glossary & FAQ
               </motion.a>
-              
-              
             </div>
 
             {/* Support Message */}
@@ -317,7 +314,7 @@ export default function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Support continued development of ExecLLM and help us add more AI models and features
+              Compare AI models side-by-side or learn key terminology to make informed decisions
             </motion.p>
           </motion.div>
         )}
