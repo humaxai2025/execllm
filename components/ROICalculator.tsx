@@ -7,13 +7,16 @@ interface ROICalculatorProps {
   onClose: () => void;
 }
 
+type IndustryType = 'financial-services' | 'healthcare' | 'technology' | 'legal' | 'manufacturing' | 'retail';
+type UseCaseType = 'customer-service' | 'content-creation' | 'document-processing' | 'code-assistance' | 'contract-review' | 'compliance-review' | 'clinical-support' | 'documentation';
+
 interface EnhancedROIInputs {
   currentCosts: number;
   teamSize: number;
   monthlyVolume: number;
   hourlyRate: number;
-  useCase: string;
-  industry: string;
+  useCase: UseCaseType;
+  industry: IndustryType;
   companySize: 'startup' | 'mid-market' | 'enterprise';
   riskTolerance: 'conservative' | 'moderate' | 'aggressive';
 }
@@ -123,7 +126,7 @@ const useCaseTemplates = {
   }
 };
 
-const industries = [
+const industries: { value: IndustryType; label: string }[] = [
   { value: 'financial-services', label: 'Financial Services' },
   { value: 'healthcare', label: 'Healthcare & Life Sciences' },
   { value: 'technology', label: 'Technology & Software' },
@@ -138,15 +141,16 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
     teamSize: 8,
     monthlyVolume: 2000,
     hourlyRate: 85,
-    useCase: "customer-service",
-    industry: "technology",
+    useCase: "customer-service" as UseCaseType,
+    industry: "technology" as IndustryType,
     companySize: "mid-market",
     riskTolerance: "moderate"
   });
 
   const calculations = useMemo(() => {
-    // Get industry and use case benchmarks
-    const benchmark = industryBenchmarks[inputs.industry]?.[inputs.useCase] || {
+    // Get industry and use case benchmarks with proper type handling
+    const industryData = industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks];
+    const benchmark = industryData?.[inputs.useCase as keyof typeof industryData] || {
       automationRate: 0.35,
       accuracyRate: 0.85,
       adoptionMonths: 6,
@@ -160,11 +164,12 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
       speedScore: 0.88
     };
 
-    // Get use case template
-    const template = useCaseTemplates[inputs.useCase];
+    // Get use case template with proper type handling
+    const template = useCaseTemplates[inputs.useCase as keyof typeof useCaseTemplates] || useCaseTemplates["customer-service"];
 
     // Calculate realistic API costs
-    const modelPricing = Object.values(vendorPricing[model.vendor] || {})[0] || {
+    const vendorModels = vendorPricing[model.vendor as keyof typeof vendorPricing];
+    const modelPricing = vendorModels ? Object.values(vendorModels)[0] : {
       inputCost: 0.002,
       outputCost: 0.004,
       avgTokensPerRequest: 200
@@ -216,7 +221,7 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
     let confidence = 0.65; // Base confidence
     
     // Increase confidence for well-documented industries/use cases
-    if (industryBenchmarks[inputs.industry]?.[inputs.useCase]) confidence += 0.15;
+    if (industryBenchmarks[inputs.industry as keyof typeof industryBenchmarks]?.[inputs.useCase as any]) confidence += 0.15;
     if (modelPerformance[model.name]) confidence += 0.10;
     if (performance.reliability > 0.95) confidence += 0.05;
     if (inputs.riskTolerance === 'conservative') confidence += 0.05;
@@ -281,7 +286,7 @@ export function ROICalculator({ model, onClose }: ROICalculatorProps) {
   }, [inputs, model]);
 
   const updateInput = (field: keyof EnhancedROIInputs, value: number | string) => {
-    setInputs(prev => ({ ...prev, [field]: value }));
+    setInputs(prev => ({ ...prev, [field]: value as any }));
   };
 
   const getRecommendation = () => {
@@ -470,7 +475,7 @@ Actual results may vary. Conduct pilot testing to validate assumptions.
                 <label className="block text-sm font-medium text-slate-300 mb-2">Industry</label>
                 <select
                   value={inputs.industry}
-                  onChange={(e) => updateInput('industry', e.target.value)}
+                  onChange={(e) => updateInput('industry', e.target.value as IndustryType)}
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:border-purple-500/50"
                 >
                   {industries.map(industry => (
@@ -484,7 +489,7 @@ Actual results may vary. Conduct pilot testing to validate assumptions.
                 <label className="block text-sm font-medium text-slate-300 mb-2">Use Case</label>
                 <select
                   value={inputs.useCase}
-                  onChange={(e) => updateInput('useCase', e.target.value)}
+                  onChange={(e) => updateInput('useCase', e.target.value as UseCaseType)}
                   className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:border-purple-500/50"
                 >
                   {Object.entries(useCaseTemplates).map(([key, template]) => (
@@ -500,7 +505,7 @@ Actual results may vary. Conduct pilot testing to validate assumptions.
                   <label className="block text-sm font-medium text-slate-300 mb-2">Company Size</label>
                   <select
                     value={inputs.companySize}
-                    onChange={(e) => updateInput('companySize', e.target.value)}
+                    onChange={(e) => updateInput('companySize', e.target.value as 'startup' | 'mid-market' | 'enterprise')}
                     className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:border-purple-500/50"
                   >
                     <option value="startup">Startup</option>
@@ -512,7 +517,7 @@ Actual results may vary. Conduct pilot testing to validate assumptions.
                   <label className="block text-sm font-medium text-slate-300 mb-2">Risk Tolerance</label>
                   <select
                     value={inputs.riskTolerance}
-                    onChange={(e) => updateInput('riskTolerance', e.target.value)}
+                    onChange={(e) => updateInput('riskTolerance', e.target.value as 'conservative' | 'moderate' | 'aggressive')}
                     className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:border-purple-500/50"
                   >
                     <option value="conservative">Conservative</option>
