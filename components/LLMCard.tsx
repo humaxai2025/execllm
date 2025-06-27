@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { LLMCard } from "../components/LLMCard";
+import LLMCard from "../components/LLMCard";
 import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
 import { FilterBar } from "../components/FilterBar";
