@@ -144,17 +144,17 @@ export default function HomePage() {
   }, [llms]);
 
   const handleFilterChange = (filterType: string, value: string) => {
-  setFilters(prev => {
-    const currentFilters = prev[filterType as keyof Filters];
-    // Single-select behavior: if value is already selected, clear it; otherwise set only this value
-    const newFilters = currentFilters.includes(value) ? [] : [value];
-    
-    return {
-      ...prev,
-      [filterType]: newFilters
-    };
-  });
-};
+    setFilters(prev => {
+      const currentFilters = prev[filterType as keyof Filters];
+      // Single-select behavior: if value is already selected, clear it; otherwise set only this value
+      const newFilters = currentFilters.includes(value) ? [] : [value];
+      
+      return {
+        ...prev,
+        [filterType]: newFilters
+      };
+    });
+  };
 
   const clearAllFilters = () => {
     setFilters({
@@ -265,14 +265,15 @@ export default function HomePage() {
           </>
         )}
 
-        {/* Comparison Mode Toggle - Always Visible */}
+        {/* Action Buttons - Comparison, Glossary, Support */}
         {!loading && (
           <motion.div 
-            className="flex justify-center mb-8"
+            className="flex flex-col items-center gap-6 mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
+            {/* Comparison Mode Toggle */}
             <motion.button
               onClick={toggleComparisonMode}
               className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 text-lg ${
@@ -293,6 +294,41 @@ export default function HomePage() {
                 </span>
               )}
             </motion.button>
+
+            {/* Secondary Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <motion.a 
+                href="/glossary" 
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg border border-slate-600/50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="mr-2">📚</span>
+                Glossary & FAQ
+              </motion.a>
+              
+              <motion.a 
+                href="https://buymeacoffee.com/humanxai" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="mr-2">☕</span>
+                Buy Me Coffee
+              </motion.a>
+            </div>
+
+            {/* Support Message */}
+            <motion.p 
+              className="text-slate-400 text-sm text-center max-w-md leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              Support continued development of ExecLLM and help us add more AI models and features
+            </motion.p>
           </motion.div>
         )}
 
@@ -419,6 +455,30 @@ export default function HomePage() {
                 )}
               </div>
             </motion.div>
+
+            {/* Support Section */}
+            <motion.div 
+              className="text-center mt-16"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+            >
+              <div className="flex flex-col items-center gap-4">
+                <a 
+                  href="https://buymeacoffee.com/humanxai" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25"
+                >
+                  <span className="mr-2">☕</span>
+                  Buy Me Coffee
+                </a>
+
+                <p className="text-slate-400 text-sm text-center max-w-md leading-relaxed">
+                  Support continued development of ExecLLM and help us add more AI models and features
+                </p>
+              </div>
+            </motion.div>
           </React.Fragment>
         )}
 
@@ -428,24 +488,14 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <div className="flex flex-col items-center gap-4">
-            <a 
-              href="/glossary" 
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
-            >
-              <span className="mr-2">📚</span>
-              Glossary & FAQ
-            </a>
-            
-            <motion.div 
-              className="text-slate-400 text-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.5 }}
-            >
-              Built with ❤️ by HumanXAI
-            </motion.div>
-          </div>
+          <motion.div 
+            className="text-slate-400 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.5 }}
+          >
+            Built with ❤️ by HumanXAI
+          </motion.div>
         </motion.footer>
       </div>
 
