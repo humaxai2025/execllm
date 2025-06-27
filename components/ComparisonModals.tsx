@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type LLMModel } from "../data/llms";
 
@@ -40,22 +40,48 @@ const comparisonRows = [
 ];
 
 export function ComparisonModal({ models, onClose, onRemoveModel }: ComparisonModalProps) {
+  const [exportFormat, setExportFormat] = useState<'text' | 'pdf'>('text');
+  const [showExportOptions, setShowExportOptions] = useState(false);
+
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showExportOptions) {
+          setShowExportOptions(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showExportOptions && !(e.target as Element).closest('.export-dropdown')) {
+        setShowExportOptions(false);
+      }
     };
     
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleClickOutside);
     document.body.style.overflow = 'hidden';
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [onClose]);
+  }, [onClose, showExportOptions]);
 
   const exportComparison = () => {
+    if (exportFormat === 'pdf') {
+      exportToPDF();
+    } else {
+      exportToText();
+    }
+    setShowExportOptions(false);
+  };
+
+  const exportToText = () => {
     // Create a comprehensive comparison report
     const currentDate = new Date().toLocaleDateString();
     const comparisonReport = `
@@ -102,6 +128,225 @@ For the latest information and interactive comparisons, visit ExecLLM.
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const exportToPDF = () => {
+    // Create a new window for PDF generation
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const currentDate = new Date().toLocaleDateString();
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>ExecLLM Model Comparison Report</title>
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+            background: white;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 20px;
+          }
+          .header h1 {
+            color: #6366f1;
+            font-size: 32px;
+            margin: 0;
+            font-weight: 700;
+          }
+          .header .subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin: 8px 0 0 0;
+          }
+          .meta-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #6366f1;
+          }
+          .model-section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            background: #fefefe;
+          }
+          .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+          }
+          .model-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+          }
+          .model-vendor {
+            font-size: 16px;
+            color: #6366f1;
+            font-weight: 600;
+          }
+          .cost-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+          }
+          .cost-free { background: linear-gradient(135deg, #10b981, #059669); }
+          .cost-paid { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+          .detail-section {
+            margin: 20px 0;
+          }
+          .detail-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .detail-content {
+            color: #4b5563;
+            line-height: 1.7;
+          }
+          .capability-list, .usecase-list, .deployment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+          }
+          .capability-item, .usecase-item, .deployment-item {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            border-left: 3px solid #6366f1;
+          }
+          .summary-text {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            font-style: italic;
+            border-left: 4px solid #6366f1;
+          }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+          }
+          @media print {
+            body { margin: 0; padding: 15mm; }
+            .model-section { page-break-inside: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>ExecLLM</h1>
+          <div class="subtitle">AI Model Comparison Report</div>
+        </div>
+        
+        <div class="meta-info">
+          <strong>Report Generated:</strong> ${currentDate}<br>
+          <strong>Models Compared:</strong> ${models.length}<br>
+          <strong>Comparison Type:</strong> Executive Business Analysis
+        </div>
+
+        ${models.map((model, index) => `
+          <div class="model-section">
+            <div class="model-header">
+              <div>
+                <h2 class="model-name">${model.name}</h2>
+                <div class="model-vendor">${model.vendor}</div>
+              </div>
+              <div class="cost-badge cost-${model.cost.toLowerCase()}">${model.cost}</div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-title">Overview</div>
+              <div class="summary-text">${model.summary}</div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-title">Key Capabilities</div>
+              <div class="capability-list">
+                ${model.capabilities.map(cap => `<div class="capability-item">• ${cap}</div>`).join('')}
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-title">Best Use Cases</div>
+              <div class="usecase-list">
+                ${model.useCases.map(use => `<div class="usecase-item">• ${use}</div>`).join('')}
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-title">Deployment Options</div>
+              <div class="deployment-list">
+                ${model.deployment.map(dep => `<div class="deployment-item">• ${dep}</div>`).join('')}
+              </div>
+            </div>
+
+            ${model.category ? `
+              <div class="detail-section">
+                <div class="detail-title">Category</div>
+                <div class="detail-content">${model.category}</div>
+              </div>
+            ` : ''}
+
+            ${model.releaseDate || model.modelSize ? `
+              <div class="detail-section">
+                <div class="detail-title">Technical Details</div>
+                <div class="detail-content">
+                  ${model.releaseDate ? `<strong>Release Year:</strong> ${model.releaseDate}<br>` : ''}
+                  ${model.modelSize ? `<strong>Model Size:</strong> ${model.modelSize}` : ''}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+
+        <div class="footer">
+          <p><strong>ExecLLM</strong> - Executive AI Model Comparison Platform</p>
+          <p>Built with ❤️ by HumanXAI</p>
+          <p>For the latest information and interactive comparisons, visit ExecLLM</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }, 500);
   };
 
   const renderCellContent = (model: LLMModel, row: typeof comparisonRows[0]) => {
@@ -174,17 +419,69 @@ For the latest information and interactive comparisons, visit ExecLLM.
               </div>
               
               <div className="flex items-center gap-3">
-                <motion.button
-                  onClick={exportComparison}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Export
-                </motion.button>
+                <div className="relative export-dropdown">
+                  <motion.button
+                    onClick={() => setShowExportOptions(!showExportOptions)}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {showExportOptions && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        className="absolute top-full right-0 mt-2 bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-xl p-3 shadow-2xl z-30 min-w-48"
+                      >
+                        <div className="space-y-2">
+                          <motion.button
+                            onClick={() => {
+                              setExportFormat('text');
+                              exportComparison();
+                            }}
+                            className="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 hover:text-white transition-all duration-200"
+                            whileHover={{ scale: 1.02 }}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <div className="text-left">
+                              <div className="font-medium">Text File</div>
+                              <div className="text-xs text-slate-400">Plain text format (.txt)</div>
+                            </div>
+                          </motion.button>
+                          
+                          <motion.button
+                            onClick={() => {
+                              setExportFormat('pdf');
+                              exportComparison();
+                            }}
+                            className="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 hover:text-white transition-all duration-200"
+                            whileHover={{ scale: 1.02 }}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <div className="text-left">
+                              <div className="font-medium">PDF Report</div>
+                              <div className="text-xs text-slate-400">Formatted document (.pdf)</div>
+                            </div>
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 
                 <button
                   className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 hover:text-white transition-all duration-200"
