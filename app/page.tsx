@@ -6,6 +6,8 @@ import { SearchBar } from "../components/SearchBar";
 import { FilterBar } from "../components/FilterBar";
 import { ComparisonBar } from "../components/ComparisonBar";
 import { ComparisonModal } from "../components/ComparisonModals";
+import { ROICalculator } from "../components/ROICalculator";
+import { RoadmapGenerator } from "../components/RoadmapGenerator";
 import { motion } from "framer-motion";
 import { llmsData, type LLMModel } from "../data/llms";
 
@@ -34,6 +36,12 @@ export default function HomePage() {
   const [isComparisonMode, setIsComparisonMode] = useState(false);
   const [selectedForComparison, setSelectedForComparison] = useState<LLMModel[]>([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
+
+  // ROI Calculator and Roadmap state
+  const [showROICalculator, setShowROICalculator] = useState(false);
+  const [showRoadmapGenerator, setShowRoadmapGenerator] = useState(false);
+  const [roiModel, setROIModel] = useState<LLMModel | null>(null);
+  const [roadmapModel, setRoadmapModel] = useState<LLMModel | null>(null);
 
   useEffect(() => {
     // Simulate a brief loading state for better UX, then load the data
@@ -93,74 +101,6 @@ export default function HomePage() {
 
     return result;
   }, [llms, search, filters]);
-
-  // Enhanced FilterBar with proper counts
-  const filterBarWithCounts = useMemo(() => {
-    const getFilterCounts = () => {
-      const costTiers = [
-        { value: "Free", count: 0, color: "bg-green-100 text-green-700 border-green-300" },
-        { value: "$", count: 0, color: "bg-blue-100 text-blue-700 border-blue-300" },
-        { value: "$$", count: 0, color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-        { value: "$$$", count: 0, color: "bg-red-100 text-red-700 border-red-300" }
-      ];
-
-      const vendorColors: Record<string, string> = {
-        "OpenAI": "bg-green-100 text-green-700 border-green-300",
-        "Anthropic": "bg-orange-100 text-orange-700 border-orange-300",
-        "Google": "bg-blue-100 text-blue-700 border-blue-300",
-        "Meta": "bg-purple-100 text-purple-700 border-purple-300",
-        "Mistral AI": "bg-cyan-100 text-cyan-700 border-cyan-300",
-        "Cohere": "bg-pink-100 text-pink-700 border-pink-300",
-        "Perplexity": "bg-indigo-100 text-indigo-700 border-indigo-300",
-        "AI21 Labs": "bg-teal-100 text-teal-700 border-teal-300",
-        "Stability AI": "bg-rose-100 text-rose-700 border-rose-300",
-        "Technology Innovation Institute": "bg-amber-100 text-amber-700 border-amber-300",
-        "Zhipu AI": "bg-emerald-100 text-emerald-700 border-emerald-300"
-      };
-
-      const costCounts = costTiers.map(tier => ({
-        ...tier,
-        count: llms.filter(m => m.cost === tier.value).length
-      }));
-
-      const vendorCounts = Array.from(new Set(llms.map(m => m.vendor)))
-        .map(vendor => ({
-          value: vendor,
-          count: llms.filter(m => m.vendor === vendor).length,
-          color: vendorColors[vendor] || "bg-gray-100 text-gray-700 border-gray-300"
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      const categoryCounts = Array.from(new Set(llms.map(m => m.category).filter(Boolean)))
-        .map(category => ({
-          value: category!,
-          count: llms.filter(m => m.category === category).length
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      const deploymentCounts = Array.from(
-        new Set(llms.flatMap(m => m.deployment))
-      )
-        .map(deployment => ({
-          value: deployment,
-          count: llms.filter(m => m.deployment.includes(deployment)).length
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      const industryCounts = Array.from(
-        new Set(llms.flatMap(m => m.industries))
-      )
-        .map(industry => ({
-          value: industry,
-          count: llms.filter(m => m.industries.includes(industry)).length
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      return { costCounts, vendorCounts, categoryCounts, deploymentCounts, industryCounts };
-    };
-
-    return getFilterCounts();
-  }, [llms]);
 
   const handleFilterChange = (filterType: string, value: string) => {
     setFilters(prev => {
@@ -224,6 +164,17 @@ export default function HomePage() {
     setSelectedForComparison(prev => prev.filter(m => m.name !== modelName));
   };
 
+  // ROI and Roadmap handlers
+  const handleROIClick = (model: LLMModel) => {
+    setROIModel(model);
+    setShowROICalculator(true);
+  };
+
+  const handleRoadmapClick = (model: LLMModel) => {
+    setRoadmapModel(model);
+    setShowRoadmapGenerator(true);
+  };
+
   const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
 
   const backgroundStyle = {
@@ -261,6 +212,54 @@ export default function HomePage() {
           >
             Compare the world's most powerful AI models for business—designed for executives who value clarity over complexity.
           </motion.p>
+
+          {/* 🔥 ENHANCED HERO SECTION - Executive Features 🔥 */}
+          <motion.div 
+            className="mb-12 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            {/* ROI Calculator Feature */}
+            <motion.div 
+              className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 border border-green-700/30 rounded-2xl p-6 text-center"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <div className="text-3xl mb-3">💰</div>
+              <h3 className="text-lg font-semibold text-green-300 mb-2">ROI Calculator</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Get instant business case with payback period, cost savings, and 3-year ROI projections
+              </p>
+            </motion.div>
+
+            {/* Implementation Roadmap Feature */}
+            <motion.div 
+              className="bg-gradient-to-br from-blue-900/20 to-cyan-900/20 border border-blue-700/30 rounded-2xl p-6 text-center"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <div className="text-3xl mb-3">📋</div>
+              <h3 className="text-lg font-semibold text-blue-300 mb-2">Implementation Roadmaps</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Phase-by-phase implementation plans with timelines, team requirements, and success metrics
+              </p>
+            </motion.div>
+
+            {/* Executive Reports Feature */}
+            <motion.div 
+              className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-2xl p-6 text-center"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <div className="text-3xl mb-3">📊</div>
+              <h3 className="text-lg font-semibold text-purple-300 mb-2">Executive Reports</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Professional exports with strategic insights and recommendations for board presentations
+              </p>
+            </motion.div>
+          </motion.div>
+          {/* 🔥 END ENHANCED HERO SECTION 🔥 */}
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -334,7 +333,7 @@ export default function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Compare AI models side-by-side or learn key terminology to make informed decisions
+              Calculate ROI, get implementation roadmaps, or learn key terminology to make informed decisions
             </motion.p>
           </motion.div>
         )}
@@ -448,6 +447,8 @@ export default function HomePage() {
                     isSelected={selectedForComparison.some(m => m.name === model.name)}
                     isComparisonMode={isComparisonMode}
                     comparisonFull={selectedForComparison.length >= 4}
+                    onROIClick={handleROIClick}
+                    onRoadmapClick={handleRoadmapClick}
                   />
                 </motion.div>
               ))}
@@ -533,6 +534,30 @@ export default function HomePage() {
           models={selectedForComparison}
           onClose={() => setShowComparisonModal(false)}
           onRemoveModel={removeFromComparison}
+        />
+      )}
+
+      {/* ROI Calculator Modal */}
+      {showROICalculator && roiModel && (
+        <ROICalculator
+          model={roiModel}
+          onClose={() => {
+            setShowROICalculator(false);
+            setROIModel(null);
+          }}
+        />
+      )}
+
+      {/* Roadmap Generator Modal */}
+      {showRoadmapGenerator && roadmapModel && (
+        <RoadmapGenerator
+          model={roadmapModel}
+          useCase="customer-service"
+          teamSize={5}
+          onClose={() => {
+            setShowRoadmapGenerator(false);
+            setRoadmapModel(null);
+          }}
         />
       )}
     </div>

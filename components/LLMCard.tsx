@@ -9,6 +9,8 @@ interface LLMCardProps {
   isSelected?: boolean;
   isComparisonMode?: boolean;
   comparisonFull?: boolean;
+  onROIClick?: (model: LLMModel) => void;
+  onRoadmapClick?: (model: LLMModel) => void;
 }
 
 const costColors: Record<string, string> = {
@@ -56,7 +58,9 @@ export const LLMCard = React.memo<LLMCardProps>(({
   onCompareToggle, 
   isSelected = false, 
   isComparisonMode = false, 
-  comparisonFull = false 
+  comparisonFull = false,
+  onROIClick,
+  onRoadmapClick
 }) => {
   const handleCompareClick = React.useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -64,6 +68,16 @@ export const LLMCard = React.memo<LLMCardProps>(({
       onCompareToggle?.(model);
     }
   }, [comparisonFull, isSelected, onCompareToggle, model]);
+
+  const handleROIClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onROIClick?.(model);
+  }, [onROIClick, model]);
+
+  const handleRoadmapClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRoadmapClick?.(model);
+  }, [onRoadmapClick, model]);
 
   const handleCardClick = React.useCallback(() => {
     if (isComparisonMode && onCompareToggle && (!comparisonFull || isSelected)) {
@@ -209,6 +223,40 @@ export const LLMCard = React.memo<LLMCardProps>(({
               </div>
             </div>
           </div>
+
+          {/* Quick Action Buttons */}
+          {!isComparisonMode && (onROIClick || onRoadmapClick) && (
+            <div className="mt-4 pt-3 border-t border-slate-700/50">
+              <div className="flex gap-2">
+                {onROIClick && (
+                  <motion.button
+                    onClick={handleROIClick}
+                    className="flex-1 px-3 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-700/30 text-green-300 rounded-lg text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    ROI
+                  </motion.button>
+                )}
+                {onRoadmapClick && (
+                  <motion.button
+                    onClick={handleRoadmapClick}
+                    className="flex-1 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-700/30 text-blue-300 rounded-lg text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Plan
+                  </motion.button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Click indicator */}
           <div className="mt-4 pt-3 border-t border-slate-700/50">
