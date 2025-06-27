@@ -32,10 +32,8 @@ function FilterSection({ title, icon, options, selectedValues, onToggle, isExpan
 
   const handleOptionSelect = (value: string) => {
     onToggle(value);
-    // Close the dropdown after selection
-    if (isExpanded) {
-      onToggleExpanded();
-    }
+    // Close the dropdown after selection for single-select behavior
+    onToggleExpanded();
   };
 
   // Close dropdown when clicking outside
@@ -69,7 +67,7 @@ function FilterSection({ title, icon, options, selectedValues, onToggle, isExpan
           <span className="font-medium">{title}</span>
           {hasActiveFilters && (
             <span className="px-2 py-1 bg-purple-500 text-white text-xs rounded-full">
-              {selectedValues.length}
+              {selectedValues[0]}
             </span>
           )}
         </div>
@@ -105,7 +103,18 @@ function FilterSection({ title, icon, options, selectedValues, onToggle, isExpan
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span className="font-medium">{option.value}</span>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${
+                      selectedValues.includes(option.value) 
+                        ? 'border-purple-400 bg-purple-400' 
+                        : 'border-slate-400'
+                    }`}>
+                      {selectedValues.includes(option.value) && (
+                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                      )}
+                    </div>
+                    <span className="font-medium">{option.value}</span>
+                  </div>
                   <span className="text-xs opacity-75">({option.count})</span>
                 </motion.button>
               ))}
@@ -141,11 +150,11 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     };
   }, []);
 
-  // Generate filter options with counts - FIXED COST TIERS
+  // Generate filter options with counts - SIMPLIFIED COST TIERS
   const costTiers = [
-  { value: "Free", count: allModels.filter(m => m.cost === "Free").length, color: "bg-green-600/20 text-green-300 border border-green-500/30" },
-  { value: "Paid", count: allModels.filter(m => m.cost === "Paid").length, color: "bg-blue-600/20 text-blue-300 border border-blue-500/30" }
-];
+    { value: "Free", count: allModels.filter(m => m.cost === "Free").length, color: "bg-green-600/20 text-green-300 border border-green-500/30" },
+    { value: "Paid", count: allModels.filter(m => m.cost === "Paid").length, color: "bg-blue-600/20 text-blue-300 border border-blue-500/30" }
+  ];
 
   const vendorColors: Record<string, string> = {
     "OpenAI": "bg-green-600/20 text-green-300 border border-green-500/30",
@@ -189,7 +198,7 @@ export function FilterBar({ filters, onFilterChange, onClearAll, totalModels, fi
     .sort((a, b) => b.count - a.count);
 
   const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
-  const activeFilterCount = Object.values(filters).reduce((total, filterArray) => total + filterArray.length, 0);
+  const activeFilterCount = Object.values(filters).filter(filterArray => filterArray.length > 0).length;
 
   return (
     <motion.div 

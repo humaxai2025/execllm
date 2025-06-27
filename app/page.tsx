@@ -144,18 +144,17 @@ export default function HomePage() {
   }, [llms]);
 
   const handleFilterChange = (filterType: string, value: string) => {
-    setFilters(prev => {
-      const currentFilters = prev[filterType as keyof Filters];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter(f => f !== value)
-        : [...currentFilters, value];
-      
-      return {
-        ...prev,
-        [filterType]: newFilters
-      };
-    });
-  };
+  setFilters(prev => {
+    const currentFilters = prev[filterType as keyof Filters];
+    // Single-select behavior: if value is already selected, clear it; otherwise set only this value
+    const newFilters = currentFilters.includes(value) ? [] : [value];
+    
+    return {
+      ...prev,
+      [filterType]: newFilters
+    };
+  });
+};
 
   const clearAllFilters = () => {
     setFilters({
