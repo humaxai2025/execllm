@@ -77,7 +77,7 @@ export const LLMCard = React.memo<LLMCardProps>(({
         {/* Comparison Checkbox */}
         {(isComparisonMode || isSelected) && (
           <motion.div
-            className="absolute top-4 right-4 z-10"
+            className="absolute top-4 left-4 z-10"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -85,7 +85,7 @@ export const LLMCard = React.memo<LLMCardProps>(({
             <motion.button
               onClick={handleCompareClick}
               disabled={isDisabled}
-              className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
+              className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 shadow-lg ${
                 isSelected
                   ? 'bg-purple-500 border-purple-500 text-white'
                   : isDisabled
@@ -109,8 +109,8 @@ export const LLMCard = React.memo<LLMCardProps>(({
         
         <div className="relative z-10 flex flex-col h-full">
           {/* Header */}
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex-1 pr-8">
+          <div className={`flex justify-between items-start mb-4 ${(isComparisonMode || isSelected) ? 'ml-8' : ''}`}>
+            <div className="flex-1 pr-4">
               <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-cyan-400 transition-all duration-300">
                 {model.name}
               </h3>
@@ -118,7 +118,7 @@ export const LLMCard = React.memo<LLMCardProps>(({
                 {model.vendor}
               </p>
             </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-bold ${costColors[model.cost] || "bg-gray-600 text-white"} shadow-lg`}>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${costColors[model.cost] || "bg-gray-600 text-white"} shadow-lg flex-shrink-0`}>
               {model.cost}
             </div>
           </div>
