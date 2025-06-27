@@ -307,17 +307,7 @@ export default function HomePage() {
                 Glossary & FAQ
               </motion.a>
               
-              <motion.a 
-                href="https://buymeacoffee.com/humanxai" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="mr-2">☕</span>
-                Buy Me Coffee
-              </motion.a>
+              
             </div>
 
             {/* Support Message */}
