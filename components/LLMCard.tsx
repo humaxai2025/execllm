@@ -1,464 +1,188 @@
-"use client";
-import React, { useState, useEffect, useMemo } from "react";
-import LLMCard from "../components/LLMCard";
-import { LLMDetailsModal } from "../components/LLMDetailsModal";
-import { SearchBar } from "../components/SearchBar";
-import { FilterBar } from "../components/FilterBar";
-import { ComparisonBar } from "../components/ComparisonBar";
-import { ComparisonModal } from "../components/ComparisonModals";
+import React from "react";
 import { motion } from "framer-motion";
-import { llmsData, type LLMModel } from "../data/llms";
+import { type LLMModel } from "../data/llms";
 
-interface Filters {
-  cost: string[];
-  vendor: string[];
-  category: string[];
-  deployment: string[];
+interface LLMCardProps {
+  model: LLMModel;
+  onClick: () => void;
+  onCompareToggle?: (model: LLMModel) => void;
+  isSelected?: boolean;
+  isComparisonMode?: boolean;
+  comparisonFull?: boolean;
 }
 
-export default function HomePage() {
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<LLMModel | null>(null);
-  const [llms, setLlms] = useState<LLMModel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({
-    cost: [],
-    vendor: [],
-    category: [],
-    deployment: []
-  });
-  
-  // Comparison state
-  const [isComparisonMode, setIsComparisonMode] = useState(false);
-  const [selectedForComparison, setSelectedForComparison] = useState<LLMModel[]>([]);
-  const [showComparisonModal, setShowComparisonModal] = useState(false);
+const costColors: Record<string, string> = {
+  "$": "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
+  "$$": "bg-gradient-to-r from-yellow-500 to-orange-500 text-white",
+  "$$$": "bg-gradient-to-r from-red-500 to-pink-500 text-white",
+  "Free": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+};
 
-  useEffect(() => {
-    // Simulate a brief loading state for better UX, then load the data
-    const timer = setTimeout(() => {
-      setLlms(llmsData);
-      setLoading(false);
-    }, 800);
+const vendorColors: Record<string, string> = {
+  "OpenAI": "text-green-400",
+  "Anthropic": "text-orange-400", 
+  "Google": "text-blue-400",
+  "Meta": "text-purple-400",
+  "Mistral AI": "text-cyan-400",
+  "Cohere": "text-pink-400",
+  "Perplexity": "text-indigo-400",
+  "AI21 Labs": "text-teal-400",
+  "Stability AI": "text-rose-400",
+  "Technology Innovation Institute": "text-amber-400",
+  "Zhipu AI": "text-emerald-400"
+};
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Memoized filtering logic
-  const filteredAndSearched = useMemo(() => {
-    let result = llms;
-
-    // Apply search filter
-    if (search) {
-      result = result.filter(
-        (m) =>
-          m.name.toLowerCase().includes(search.toLowerCase()) ||
-          m.vendor.toLowerCase().includes(search.toLowerCase()) ||
-          m.useCases.join(" ").toLowerCase().includes(search.toLowerCase()) ||
-          m.capabilities.join(" ").toLowerCase().includes(search.toLowerCase()) ||
-          (m.category && m.category.toLowerCase().includes(search.toLowerCase()))
-      );
+export const LLMCard = React.memo<LLMCardProps>(({ 
+  model, 
+  onClick, 
+  onCompareToggle, 
+  isSelected = false, 
+  isComparisonMode = false, 
+  comparisonFull = false 
+}) => {
+  const handleCompareClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!comparisonFull || isSelected) {
+      onCompareToggle?.(model);
     }
+  }, [comparisonFull, isSelected, onCompareToggle, model]);
 
-    // Apply cost filters
-    if (filters.cost.length > 0) {
-      result = result.filter(m => filters.cost.includes(m.cost));
+  const handleCardClick = React.useCallback(() => {
+    if (isComparisonMode && onCompareToggle && (!comparisonFull || isSelected)) {
+      onCompareToggle(model);
+    } else if (!isComparisonMode) {
+      onClick();
     }
+  }, [isComparisonMode, onCompareToggle, comparisonFull, isSelected, model, onClick]);
 
-    // Apply vendor filters
-    if (filters.vendor.length > 0) {
-      result = result.filter(m => filters.vendor.includes(m.vendor));
-    }
-
-    // Apply category filters
-    if (filters.category.length > 0) {
-      result = result.filter(m => m.category && filters.category.includes(m.category));
-    }
-
-    // Apply deployment filters
-    if (filters.deployment.length > 0) {
-      result = result.filter(m => 
-        m.deployment.some(dep => filters.deployment.includes(dep))
-      );
-    }
-
-    return result;
-  }, [llms, search, filters]);
-
-  // Enhanced FilterBar with proper counts
-  const filterBarWithCounts = useMemo(() => {
-    const getFilterCounts = () => {
-      const costTiers = [
-        { value: "Free", count: 0, color: "bg-green-100 text-green-700 border-green-300" },
-        { value: "$", count: 0, color: "bg-blue-100 text-blue-700 border-blue-300" },
-        { value: "$$", count: 0, color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-        { value: "$$$", count: 0, color: "bg-red-100 text-red-700 border-red-300" }
-      ];
-
-      const vendorColors: Record<string, string> = {
-        "OpenAI": "bg-green-100 text-green-700 border-green-300",
-        "Anthropic": "bg-orange-100 text-orange-700 border-orange-300",
-        "Google": "bg-blue-100 text-blue-700 border-blue-300",
-        "Meta": "bg-purple-100 text-purple-700 border-purple-300",
-        "Mistral AI": "bg-cyan-100 text-cyan-700 border-cyan-300",
-        "Cohere": "bg-pink-100 text-pink-700 border-pink-300",
-        "Perplexity": "bg-indigo-100 text-indigo-700 border-indigo-300",
-        "AI21 Labs": "bg-teal-100 text-teal-700 border-teal-300",
-        "Stability AI": "bg-rose-100 text-rose-700 border-rose-300",
-        "Technology Innovation Institute": "bg-amber-100 text-amber-700 border-amber-300",
-        "Zhipu AI": "bg-emerald-100 text-emerald-700 border-emerald-300"
-      };
-
-      const costCounts = costTiers.map(tier => ({
-        ...tier,
-        count: llms.filter(m => m.cost === tier.value).length
-      }));
-
-      const vendorCounts = Array.from(new Set(llms.map(m => m.vendor)))
-        .map(vendor => ({
-          value: vendor,
-          count: llms.filter(m => m.vendor === vendor).length,
-          color: vendorColors[vendor] || "bg-gray-100 text-gray-700 border-gray-300"
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      const categoryCounts = Array.from(new Set(llms.map(m => m.category).filter(Boolean)))
-        .map(category => ({
-          value: category!,
-          count: llms.filter(m => m.category === category).length
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      const deploymentCounts = Array.from(
-        new Set(llms.flatMap(m => m.deployment))
-      )
-        .map(deployment => ({
-          value: deployment,
-          count: llms.filter(m => m.deployment.includes(deployment)).length
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      return { costCounts, vendorCounts, categoryCounts, deploymentCounts };
-    };
-
-    return getFilterCounts();
-  }, [llms]);
-
-  const handleFilterChange = (filterType: string, value: string) => {
-    setFilters(prev => {
-      const currentFilters = prev[filterType as keyof Filters];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter(f => f !== value)
-        : [...currentFilters, value];
-      
-      return {
-        ...prev,
-        [filterType]: newFilters
-      };
-    });
-  };
-
-  const clearAllFilters = () => {
-    setFilters({
-      cost: [],
-      vendor: [],
-      category: [],
-      deployment: []
-    });
-  };
-
-  // Comparison handlers
-  const toggleComparisonMode = () => {
-    setIsComparisonMode(!isComparisonMode);
-    if (!isComparisonMode) {
-      setSelectedForComparison([]);
-    }
-  };
-
-  const handleCompareToggle = (model: LLMModel) => {
-    setSelectedForComparison(prev => {
-      const isAlreadySelected = prev.find(m => m.name === model.name);
-      if (isAlreadySelected) {
-        return prev.filter(m => m.name !== model.name);
-      } else {
-        // Limit to 4 models for comparison
-        if (prev.length >= 4) {
-          // Could add a toast notification here
-          console.log("Maximum 4 models can be compared at once");
-          return prev;
-        }
-        return [...prev, model];
-      }
-    });
-  };
-
-  const openComparisonModal = () => {
-    if (selectedForComparison.length >= 2) {
-      setShowComparisonModal(true);
-    }
-  };
-
-  const clearComparisonSelection = () => {
-    setSelectedForComparison([]);
-  };
-
-  const removeFromComparison = (modelName: string) => {
-    setSelectedForComparison(prev => prev.filter(m => m.name !== modelName));
-  };
-
-  const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
-
-  const backgroundStyle = {
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-  };
+  const isDisabled = comparisonFull && !isSelected;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="absolute inset-0 opacity-50" style={backgroundStyle}></div>
-      
-      <div className="relative z-10 py-12 px-4 sm:px-6 lg:px-8">
-        <motion.header 
-          className="mb-16 flex flex-col items-center text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+    <motion.div
+      whileHover={!isDisabled ? { 
+        scale: 1.02,
+        y: -4
+      } : {}}
+      whileTap={!isDisabled ? { scale: 0.98 } : {}}
+      className={`group h-full ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+      onClick={handleCardClick}
+    >
+      <div className={`relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border rounded-3xl p-6 h-full transition-all duration-300 hover:shadow-2xl ${
+        isSelected 
+          ? 'border-purple-500/70 bg-purple-900/20 shadow-purple-500/20' 
+          : isDisabled
+            ? 'border-slate-700/30 opacity-50 cursor-not-allowed'
+            : 'border-slate-700/50 hover:border-purple-500/50 hover:shadow-purple-500/10'
+      }`}>
+        {/* Comparison Checkbox */}
+        {(isComparisonMode || isSelected) && (
           <motion.div
-            className="mb-6"
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <h1 className="text-6xl sm:text-7xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-              ExecLLM
-            </h1>
-            <div className="h-1 w-32 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto rounded-full"></div>
-          </motion.div>
-          
-          <motion.p 
-            className="text-xl sm:text-2xl text-slate-300 mb-8 max-w-3xl leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Compare the world's most powerful AI models for business—designed for executives who value clarity over complexity.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="w-full max-w-md"
-          >
-            <SearchBar value={search} onChange={setSearch} />
-          </motion.div>
-        </motion.header>
-
-        {!loading && (
-          <>
-            <FilterBar
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearAll={clearAllFilters}
-              totalModels={llms.length}
-              filteredCount={filteredAndSearched.length}
-              allModels={llms}
-            />
-          </>
-        )}
-
-        {/* Comparison Mode Toggle - Always Visible */}
-        {!loading && (
-          <motion.div 
-            className="flex justify-center mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            className="absolute top-4 right-4 z-10"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
           >
             <motion.button
-              onClick={toggleComparisonMode}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 text-lg ${
-                isComparisonMode 
-                  ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg shadow-purple-500/25' 
-                  : 'bg-slate-800/80 border-2 border-slate-700/50 text-slate-300 hover:border-purple-500/50 hover:bg-slate-700/80'
+              onClick={handleCompareClick}
+              disabled={isDisabled}
+              className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
+                isSelected
+                  ? 'bg-purple-500 border-purple-500 text-white'
+                  : isDisabled
+                    ? 'border-slate-600 bg-slate-700/30 cursor-not-allowed'
+                    : 'border-slate-400 hover:border-purple-400 bg-slate-800/50'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={!isDisabled ? { scale: 1.1 } : {}}
+              whileTap={!isDisabled ? { scale: 0.9 } : {}}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
-              </svg>
-              {isComparisonMode ? 'Exit Comparison Mode' : 'Enter Comparison Mode'}
-              {selectedForComparison.length > 0 && (
-                <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-bold">
-                  {selectedForComparison.length}
-                </span>
+              {isSelected && (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               )}
             </motion.button>
           </motion.div>
         )}
 
-        {/* Floating Comparison Bar - Shows when models are selected */}
-        <ComparisonBar
-          selectedModels={selectedForComparison}
-          isComparisonMode={isComparisonMode}
-          onToggleComparisonMode={toggleComparisonMode}
-          onCompare={openComparisonModal}
-          onClearSelection={clearComparisonSelection}
-          onRemoveModel={removeFromComparison}
-        />
-
-        {loading && (
-          <motion.div 
-            className="flex justify-center items-center py-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-cyan-600/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        <div className="relative z-10 flex flex-col h-full">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1 pr-8">
+              <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-cyan-400 transition-all duration-300">
+                {model.name}
+              </h3>
+              <p className={`text-sm font-semibold ${vendorColors[model.vendor] || "text-slate-400"}`}>
+                {model.vendor}
+              </p>
             </div>
-          </motion.div>
-        )}
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${costColors[model.cost] || "bg-gray-600 text-white"} shadow-lg`}>
+              {model.cost}
+            </div>
+          </div>
 
-        {!loading && (
-          <React.Fragment>
-            {filteredAndSearched.length === 0 && llms.length > 0 && (
-              <motion.div 
-                className="text-center py-20"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-2xl font-semibold text-slate-300 mb-2">No models found</h3>
-                <p className="text-slate-400 mb-4">
-                  {search || hasActiveFilters 
-                    ? "Try adjusting your search terms or filters" 
-                    : "No models match your criteria"
-                  }
-                </p>
-                {hasActiveFilters && (
-                  <motion.button
-                    onClick={clearAllFilters}
-                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+          {/* Summary */}
+          <p className="text-slate-300 text-sm mb-4 line-clamp-3 flex-grow">
+            {model.summary}
+          </p>
+
+          {/* Capabilities */}
+          <div className="space-y-3">
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 mb-2">CAPABILITIES</h4>
+              <div className="flex flex-wrap gap-1">
+                {model.capabilities.slice(0, 3).map((capability) => (
+                  <span
+                    key={capability}
+                    className="px-2 py-1 bg-purple-900/30 text-purple-300 text-xs rounded-lg border border-purple-700/30"
                   >
-                    Clear All Filters
-                  </motion.button>
-                )}
-              </motion.div>
-            )}
-
-            {/* Comparison Mode Help Text */}
-            {isComparisonMode && selectedForComparison.length === 0 && filteredAndSearched.length > 0 && (
-              <motion.div 
-                className="text-center py-12 mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border border-purple-500/30 rounded-2xl p-6 max-w-md mx-auto">
-                  <div className="text-4xl mb-3">⚖️</div>
-                  <h3 className="text-lg font-semibold text-purple-300 mb-2">Comparison Mode Active</h3>
-                  <p className="text-slate-400 text-sm">
-                    Click the checkboxes on model cards to select up to 4 models for comparison
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
-              {filteredAndSearched.map((model, index) => (
-                <motion.div
-                  key={model.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
-                >
-                  <LLMCard 
-                    model={model} 
-                    onClick={() => setSelected(model)}
-                    onCompareToggle={handleCompareToggle}
-                    isSelected={selectedForComparison.some(m => m.name === model.name)}
-                    isComparisonMode={isComparisonMode}
-                    comparisonFull={selectedForComparison.length >= 4}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* Enhanced Results Summary */}
-            <motion.div 
-              className="text-center mt-12"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-            >
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-slate-400">
-                <p>
-                  {search || hasActiveFilters 
-                    ? `Showing ${filteredAndSearched.length} of ${llms.length} models` 
-                    : `${llms.length} AI models available`
-                  }
-                </p>
-                {(search || hasActiveFilters) && (
-                  <motion.button
-                    onClick={() => {
-                      setSearch("");
-                      clearAllFilters();
-                    }}
-                    className="px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600/50 text-slate-300 rounded-lg transition-all duration-200 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Show All Models
-                  </motion.button>
+                    {capability}
+                  </span>
+                ))}
+                {model.capabilities.length > 3 && (
+                  <span className="px-2 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg">
+                    +{model.capabilities.length - 3}
+                  </span>
                 )}
               </div>
-            </motion.div>
-          </React.Fragment>
-        )}
+            </div>
 
-        <motion.footer 
-          className="mt-20 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1 }}
-        >
-          <div className="flex flex-col items-center gap-4">
-            <a 
-              href="/glossary" 
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
-            >
-              <span className="mr-2">📚</span>
-              Glossary & FAQ
-            </a>
-            
-            <motion.div 
-              className="text-slate-400 text-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.5 }}
-            >
-              Built with ❤️ by HumanXAI
-            </motion.div>
+            {/* Use Cases */}
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 mb-2">USE CASES</h4>
+              <div className="flex flex-wrap gap-1">
+                {model.useCases.slice(0, 2).map((useCase) => (
+                  <span
+                    key={useCase}
+                    className="px-2 py-1 bg-cyan-900/30 text-cyan-300 text-xs rounded-lg border border-cyan-700/30"
+                  >
+                    {useCase}
+                  </span>
+                ))}
+                {model.useCases.length > 2 && (
+                  <span className="px-2 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg">
+                    +{model.useCases.length - 2}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        </motion.footer>
-      </div>
 
-      <LLMDetailsModal model={selected} onClose={() => setSelected(null)} />
-      
-      {showComparisonModal && (
-        <ComparisonModal
-          models={selectedForComparison}
-          onClose={() => setShowComparisonModal(false)}
-          onRemoveModel={removeFromComparison}
-        />
-      )}
-    </div>
+          {/* Click indicator */}
+          <div className="mt-4 pt-3 border-t border-slate-700/50">
+            <div className="flex items-center justify-center text-slate-500 group-hover:text-purple-400 transition-colors duration-300">
+              <span className="text-xs font-medium mr-1">
+                {isComparisonMode ? 'Click to compare' : 'Click for details'}
+              </span>
+              <svg className="w-3 h-3 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
-}
+});

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import LLMCard from "../components/LLMCard";
+import { LLMCard } from "../components/LLMCard";
 import { LLMDetailsModal } from "../components/LLMDetailsModal";
 import { SearchBar } from "../components/SearchBar";
 import { FilterBar } from "../components/FilterBar";
@@ -379,7 +379,14 @@ export default function HomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                 >
-                  <LLMCard model={model} onClick={() => setSelected(model)} />
+                  <LLMCard 
+                    model={model} 
+                    onClick={() => setSelected(model)}
+                    onCompareToggle={handleCompareToggle}
+                    isSelected={selectedForComparison.some(m => m.name === model.name)}
+                    isComparisonMode={isComparisonMode}
+                    comparisonFull={selectedForComparison.length >= 4}
+                  />
                 </motion.div>
               ))}
             </motion.div>
