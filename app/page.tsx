@@ -527,7 +527,12 @@ export default function HomePage() {
         </motion.footer>
       </div>
 
-      <LLMDetailsModal model={selected} onClose={() => setSelected(null)} />
+      <LLMDetailsModal 
+        model={selected} 
+        onClose={() => setSelected(null)}
+        onROIClick={handleROIClick}
+        onRoadmapClick={handleRoadmapClick}
+      />
       
       {showComparisonModal && (
         <ComparisonModal
@@ -539,26 +544,30 @@ export default function HomePage() {
 
       {/* ROI Calculator Modal */}
       {showROICalculator && roiModel && (
-        <ROICalculator
-          model={roiModel}
-          onClose={() => {
-            setShowROICalculator(false);
-            setROIModel(null);
-          }}
-        />
+        <div className="fixed inset-0 z-[70]">
+          <ROICalculator
+            model={roiModel}
+            onClose={() => {
+              setShowROICalculator(false);
+              setROIModel(null);
+            }}
+          />
+        </div>
       )}
 
       {/* Roadmap Generator Modal */}
       {showRoadmapGenerator && roadmapModel && (
-        <RoadmapGenerator
-          model={roadmapModel}
-          useCase="customer-service"
-          teamSize={5}
-          onClose={() => {
-            setShowRoadmapGenerator(false);
-            setRoadmapModel(null);
-          }}
-        />
+        <div className="fixed inset-0 z-[70]">
+          <RoadmapGenerator
+            model={roadmapModel}
+            useCase="customer-service"
+            teamSize={5}
+            onClose={() => {
+              setShowRoadmapGenerator(false);
+              setRoadmapModel(null);
+            }}
+          />
+        </div>
       )}
     </div>
   );

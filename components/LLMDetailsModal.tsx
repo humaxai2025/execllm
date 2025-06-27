@@ -7,6 +7,8 @@ import { RoadmapGenerator } from "./RoadmapGenerator";
 interface LLMDetailsModalProps {
   model: LLMModel | null;
   onClose: () => void;
+  onROIClick?: (model: LLMModel) => void;
+  onRoadmapClick?: (model: LLMModel) => void;
 }
 
 const costColors: Record<string, string> = {
@@ -45,23 +47,12 @@ const industryColors: Record<string, string> = {
   "International Business": "bg-lime-900/30 text-lime-300 border-lime-700/30"
 };
 
-export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
-  const [showROICalculator, setShowROICalculator] = useState(false);
-  const [showRoadmapGenerator, setShowRoadmapGenerator] = useState(false);
-  const [selectedUseCase, setSelectedUseCase] = useState("customer-service");
-  const [teamSize, setTeamSize] = useState(5);
-
+export function LLMDetailsModal({ model, onClose, onROIClick, onRoadmapClick }: LLMDetailsModalProps) {
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showROICalculator) {
-          setShowROICalculator(false);
-        } else if (showRoadmapGenerator) {
-          setShowRoadmapGenerator(false);
-        } else {
-          onClose();
-        }
+        onClose();
       }
     };
     
@@ -74,7 +65,7 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [model, onClose, showROICalculator, showRoadmapGenerator]);
+  }, [model, onClose]);
 
   if (!model) return null;
 
@@ -128,7 +119,10 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
           <div className="relative z-10 px-8 py-4 border-b border-slate-700/50 bg-slate-800/20">
             <div className="flex flex-col sm:flex-row gap-3">
               <motion.button
-                onClick={() => setShowROICalculator(true)}
+                onClick={() => {
+                  onClose();
+                  setTimeout(() => onROIClick?.(model), 150);
+                }}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -140,7 +134,10 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
               </motion.button>
               
               <motion.button
-                onClick={() => setShowRoadmapGenerator(true)}
+                onClick={() => {
+                  onClose();
+                  setTimeout(() => onRoadmapClick?.(model), 150);
+                }}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -330,24 +327,6 @@ export function LLMDetailsModal({ model, onClose }: LLMDetailsModalProps) {
           </div>
         </motion.div>
       </motion.div>
-
-      {/* ROI Calculator Modal */}
-      {showROICalculator && (
-        <ROICalculator
-          model={model}
-          onClose={() => setShowROICalculator(false)}
-        />
-      )}
-
-      {/* Roadmap Generator Modal */}
-      {showRoadmapGenerator && (
-        <RoadmapGenerator
-          model={model}
-          useCase={selectedUseCase}
-          teamSize={teamSize}
-          onClose={() => setShowRoadmapGenerator(false)}
-        />
-      )}
     </AnimatePresence>
   );
 }
