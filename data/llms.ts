@@ -9,6 +9,12 @@ export interface LLMModel {
   category?: string;
   releaseDate?: string;
   modelSize?: string;
+  // New executive-focused fields
+  timeToValue: string;
+  integrationComplexity: "Low" | "Medium" | "High";
+  complianceLevel: "Enterprise" | "Standard" | "Basic";
+  vendorSupport: string;
+  riskLevel: "Low" | "Medium" | "High";
 }
 
 export const llmsData: LLMModel[] = [
@@ -23,7 +29,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "General Purpose",
     releaseDate: "2024",
-    modelSize: "1.76T parameters"
+    modelSize: "1.76T parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Premium Support",
+    riskLevel: "Low"
   },
   {
     name: "Claude 3 Opus",
@@ -35,7 +46,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "Safety-Focused",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Premium Support",
+    riskLevel: "Low"
   },
   {
     name: "Gemini Ultra",
@@ -47,7 +63,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Google Workspace"],
     category: "Multimodal",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Enterprise Support",
+    riskLevel: "Low"
   },
 
   // Tier 2: Balanced Performance Models
@@ -61,7 +82,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "General Purpose",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Business Support",
+    riskLevel: "Low"
   },
   {
     name: "GPT-4",
@@ -73,7 +99,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "General Purpose",
     releaseDate: "2023",
-    modelSize: "1.76T parameters"
+    modelSize: "1.76T parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Premium Support",
+    riskLevel: "Low"
   },
   {
     name: "Gemini Pro",
@@ -85,7 +116,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Google Cloud"],
     category: "Multimodal",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "Business Support",
+    riskLevel: "Low"
   },
 
   // Tier 3: Cost-Effective Models
@@ -99,7 +135,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Mobile Apps"],
     category: "General Purpose",
     releaseDate: "2023",
-    modelSize: "175B parameters"
+    modelSize: "175B parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Standard Support",
+    riskLevel: "Low"
   },
   {
     name: "Claude 3 Haiku",
@@ -111,7 +152,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Mobile", "Edge"],
     category: "Fast Response",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "Business Support",
+    riskLevel: "Low"
   },
 
   // Open Source Models
@@ -125,7 +171,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Cloud", "On-Premise", "Edge"],
     category: "Open Source",
     releaseDate: "2023",
-    modelSize: "70B parameters"
+    modelSize: "70B parameters",
+    timeToValue: "3-4 weeks",
+    integrationComplexity: "High",
+    complianceLevel: "Basic",
+    vendorSupport: "Community Support",
+    riskLevel: "Medium"
   },
   {
     name: "Mixtral 8x7B",
@@ -137,7 +188,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Cloud", "Edge", "Local"],
     category: "Open Source",
     releaseDate: "2023",
-    modelSize: "8x7B parameters"
+    modelSize: "8x7B parameters",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Basic",
+    vendorSupport: "Community Support",
+    riskLevel: "Medium"
   },
   {
     name: "Code Llama 34B",
@@ -149,7 +205,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Cloud", "Local", "IDE Integration"],
     category: "Code-Focused",
     releaseDate: "2023",
-    modelSize: "34B parameters"
+    modelSize: "34B parameters",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Basic",
+    vendorSupport: "Community Support",
+    riskLevel: "Medium"
   },
 
   // European & International Models
@@ -163,7 +224,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "European Data Centers"],
     category: "European",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-3 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "European Business Support",
+    riskLevel: "Low"
   },
   {
     name: "Mistral Medium",
@@ -175,7 +241,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "European Data Centers"],
     category: "European",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-3 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "European Business Support",
+    riskLevel: "Low"
   },
 
   // Specialized & Enterprise Models
@@ -189,7 +260,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise", "Hybrid"],
     category: "Enterprise",
     releaseDate: "2024",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Enterprise",
+    vendorSupport: "Enterprise Support",
+    riskLevel: "Medium"
   },
   {
     name: "PaLM 2",
@@ -201,7 +277,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Google Cloud Platform"],
     category: "General Purpose",
     releaseDate: "2023",
-    modelSize: "540B parameters"
+    modelSize: "540B parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "Google Cloud Support",
+    riskLevel: "Low"
   },
   {
     name: "GPT-4 Vision",
@@ -213,7 +294,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "Multimodal",
     releaseDate: "2023",
-    modelSize: "1.76T parameters"
+    modelSize: "1.76T parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Enterprise",
+    vendorSupport: "24/7 Premium Support",
+    riskLevel: "Low"
   },
 
   // Emerging & Specialized Models
@@ -227,7 +313,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Web Interface"],
     category: "Search-Augmented",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Standard Support",
+    riskLevel: "Medium"
   },
   {
     name: "Claude 2",
@@ -239,7 +330,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API"],
     category: "General Purpose",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Standard Support",
+    riskLevel: "Low"
   },
   {
     name: "Cohere Command",
@@ -251,7 +347,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "Enterprise",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Enterprise",
+    vendorSupport: "Enterprise Support",
+    riskLevel: "Medium"
   },
 
   // Advanced & Specialized Models
@@ -265,7 +366,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API"],
     category: "Image Generation",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Standard Support",
+    riskLevel: "Low"
   },
   {
     name: "Whisper",
@@ -277,7 +383,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Local"],
     category: "Speech",
     releaseDate: "2022",
-    modelSize: "1.5B parameters"
+    modelSize: "1.5B parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Standard Support",
+    riskLevel: "Low"
   },
   {
     name: "Codex",
@@ -289,7 +400,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "IDE Integration"],
     category: "Code-Focused",
     releaseDate: "2022",
-    modelSize: "12B parameters"
+    modelSize: "12B parameters",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Standard",
+    vendorSupport: "Developer Support",
+    riskLevel: "Low"
   },
 
   // Emerging International Models
@@ -303,7 +419,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Cloud", "Research"],
     category: "Open Source",
     releaseDate: "2023",
-    modelSize: "180B parameters"
+    modelSize: "180B parameters",
+    timeToValue: "3-4 weeks",
+    integrationComplexity: "High",
+    complianceLevel: "Basic",
+    vendorSupport: "Community Support",
+    riskLevel: "Medium"
   },
   {
     name: "ChatGLM3",
@@ -315,7 +436,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Cloud", "API"],
     category: "International",
     releaseDate: "2023",
-    modelSize: "6B parameters"
+    modelSize: "6B parameters",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Basic",
+    vendorSupport: "Regional Support",
+    riskLevel: "Medium"
   },
 
   // Specialized Business Models
@@ -329,7 +455,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API"],
     category: "Fast Response",
     releaseDate: "2023",
-    modelSize: "Unknown"
+    modelSize: "Unknown",
+    timeToValue: "1-2 weeks",
+    integrationComplexity: "Low",
+    complianceLevel: "Standard",
+    vendorSupport: "Business Support",
+    riskLevel: "Low"
   },
   {
     name: "Jurassic-2",
@@ -341,7 +472,12 @@ export const llmsData: LLMModel[] = [
     deployment: ["Cloud", "API", "Enterprise"],
     category: "Business-Focused",
     releaseDate: "2023",
-    modelSize: "178B parameters"
+    modelSize: "178B parameters",
+    timeToValue: "2-3 weeks",
+    integrationComplexity: "Medium",
+    complianceLevel: "Standard",
+    vendorSupport: "Enterprise Support",
+    riskLevel: "Medium"
   },
   {
     name: "StableLM",
@@ -353,6 +489,11 @@ export const llmsData: LLMModel[] = [
     deployment: ["Self-Hosted", "Local", "Cloud"],
     category: "Open Source",
     releaseDate: "2023",
-    modelSize: "7B parameters"
+    modelSize: "7B parameters",
+    timeToValue: "2-4 weeks",
+    integrationComplexity: "High",
+    complianceLevel: "Basic",
+    vendorSupport: "Community Support",
+    riskLevel: "Medium"
   }
 ];
