@@ -132,8 +132,11 @@ For the latest information and interactive comparisons, visit ExecLLM.
 
   const exportToPDF = () => {
     // Create a new window for PDF generation
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) {
+      alert('Please allow popups to export PDF');
+      return;
+    }
 
     const currentDate = new Date().toLocaleDateString();
     
@@ -144,121 +147,155 @@ For the latest information and interactive comparisons, visit ExecLLM.
         <meta charset="utf-8">
         <title>ExecLLM Model Comparison Report</title>
         <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            line-height: 1.4;
             color: #333;
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20mm;
+            font-size: 12px;
             background: white;
+            padding: 15mm;
           }
           .header {
             text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 3px solid #6366f1;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 15px;
           }
           .header h1 {
             color: #6366f1;
-            font-size: 32px;
+            font-size: 24px;
             margin: 0;
             font-weight: 700;
           }
           .header .subtitle {
             color: #64748b;
-            font-size: 16px;
-            margin: 8px 0 0 0;
+            font-size: 12px;
+            margin: 5px 0 0 0;
           }
           .meta-info {
             background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid #6366f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 3px solid #6366f1;
+            font-size: 11px;
           }
           .model-section {
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             page-break-inside: avoid;
+            page-break-after: always;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 8px;
+            padding: 15px;
             background: #fefefe;
+          }
+          .model-section:last-child {
+            page-break-after: auto;
           }
           .model-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e2e8f0;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
           }
           .model-name {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
             color: #1e293b;
-            margin: 0;
+            margin: 0 0 3px 0;
           }
           .model-vendor {
-            font-size: 16px;
+            font-size: 12px;
             color: #6366f1;
             font-weight: 600;
           }
           .cost-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 15px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 10px;
             color: white;
+            flex-shrink: 0;
           }
           .cost-free { background: linear-gradient(135deg, #10b981, #059669); }
           .cost-paid { background: linear-gradient(135deg, #3b82f6, #6366f1); }
           .detail-section {
-            margin: 20px 0;
+            margin: 12px 0;
           }
           .detail-title {
-            font-size: 16px;
+            font-size: 11px;
             font-weight: 700;
             color: #374151;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
           }
           .detail-content {
             color: #4b5563;
-            line-height: 1.7;
+            line-height: 1.5;
+            font-size: 11px;
           }
           .capability-list, .usecase-list, .deployment-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 8px;
-            margin-top: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-top: 5px;
           }
           .capability-item, .usecase-item, .deployment-item {
             background: #f1f5f9;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            border-left: 3px solid #6366f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            border-left: 2px solid #6366f1;
           }
           .summary-text {
             background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 5px;
             font-style: italic;
-            border-left: 4px solid #6366f1;
+            border-left: 3px solid #6366f1;
+            font-size: 11px;
+            line-height: 1.5;
+          }
+          .tech-details {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+          }
+          .tech-item {
+            font-size: 10px;
           }
           .footer {
-            margin-top: 40px;
+            margin-top: 20px;
             text-align: center;
-            font-size: 12px;
+            font-size: 9px;
             color: #64748b;
             border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
+            padding-top: 10px;
           }
           @media print {
-            body { margin: 0; padding: 15mm; }
-            .model-section { page-break-inside: avoid; }
+            body { 
+              margin: 0; 
+              padding: 10mm; 
+              font-size: 11px;
+            }
+            .model-section { 
+              page-break-inside: avoid; 
+              page-break-after: always;
+              margin-bottom: 0;
+            }
+            .model-section:last-child {
+              page-break-after: auto;
+            }
+            .header { margin-bottom: 15px; }
+            .meta-info { margin-bottom: 15px; }
+          }
+          @page {
+            margin: 15mm;
+            size: A4;
           }
         </style>
       </head>
@@ -269,9 +306,9 @@ For the latest information and interactive comparisons, visit ExecLLM.
         </div>
         
         <div class="meta-info">
-          <strong>Report Generated:</strong> ${currentDate}<br>
-          <strong>Models Compared:</strong> ${models.length}<br>
-          <strong>Comparison Type:</strong> Executive Business Analysis
+          <strong>Report Generated:</strong> ${currentDate} | 
+          <strong>Models Compared:</strong> ${models.length} | 
+          <strong>Type:</strong> Executive Business Analysis
         </div>
 
         ${models.map((model, index) => `
@@ -310,19 +347,13 @@ For the latest information and interactive comparisons, visit ExecLLM.
               </div>
             </div>
 
-            ${model.category ? `
-              <div class="detail-section">
-                <div class="detail-title">Category</div>
-                <div class="detail-content">${model.category}</div>
-              </div>
-            ` : ''}
-
-            ${model.releaseDate || model.modelSize ? `
+            ${(model.category || model.releaseDate || model.modelSize) ? `
               <div class="detail-section">
                 <div class="detail-title">Technical Details</div>
-                <div class="detail-content">
-                  ${model.releaseDate ? `<strong>Release Year:</strong> ${model.releaseDate}<br>` : ''}
-                  ${model.modelSize ? `<strong>Model Size:</strong> ${model.modelSize}` : ''}
+                <div class="tech-details">
+                  ${model.category ? `<div class="tech-item"><strong>Category:</strong> ${model.category}</div>` : ''}
+                  ${model.releaseDate ? `<div class="tech-item"><strong>Release:</strong> ${model.releaseDate}</div>` : ''}
+                  ${model.modelSize ? `<div class="tech-item"><strong>Size:</strong> ${model.modelSize}</div>` : ''}
                 </div>
               </div>
             ` : ''}
@@ -330,23 +361,27 @@ For the latest information and interactive comparisons, visit ExecLLM.
         `).join('')}
 
         <div class="footer">
-          <p><strong>ExecLLM</strong> - Executive AI Model Comparison Platform</p>
-          <p>Built with ❤️ by HumanXAI</p>
+          <p><strong>ExecLLM</strong> - Executive AI Model Comparison Platform | Built with ❤️ by HumanXAI</p>
           <p>For the latest information and interactive comparisons, visit ExecLLM</p>
         </div>
+
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+              setTimeout(function() {
+                window.close();
+              }, 100);
+            }, 1000);
+          };
+        </script>
       </body>
       </html>
     `;
 
+    printWindow.document.open();
     printWindow.document.write(htmlContent);
     printWindow.document.close();
-    
-    // Wait for content to load, then print
-    setTimeout(() => {
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }, 500);
   };
 
   const renderCellContent = (model: LLMModel, row: typeof comparisonRows[0]) => {
